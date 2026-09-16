@@ -1,5 +1,8 @@
 import time
 import timeout_decorator
+import networkx as nx
+from agent_baselines import Agent
+
 '''
 WINDOWS COMPATIBILITY NOTE:
     The timeout_decorator package may not work correctly on Windows. For local
@@ -22,8 +25,10 @@ class StudentAgent(Agent):
     '''
 
     @timeout_decorator.timeout(1)
-    def __init__(self, agent_name='Give a nickname'):
+    def __init__(self, agent_name='Group09Agent'):
         super().__init__(agent_name)
+        self.map_graph_army = None
+        self.map_graph_navy = None
 
         '''Implement your agent here.'''
 
@@ -31,8 +36,46 @@ class StudentAgent(Agent):
     def new_game(self, game, power_name):
         self.game = game
         self.power_name = power_name
+        self.build_map_graphs()
 
         '''Implement your agent here.'''
+
+    def build_map_graphs(self):
+        if not self.game:
+            raise Exception('Game Not Initialised. Cannot Build Map Graphs.')
+
+        self.map_graph_army = nx.Graph()
+        self.map_graph_navy = nx.Graph()
+
+        locations = list(self.game.map.loc_type.keys()) # locations with '/' are not real provinces
+
+        for i in locations:
+            if self.game.map.loc_type[i] in ['LAND', 'COAST']:
+                self.map_graph_army.add_node(i.upper())
+            if self.game.map.loc_type[i] in ['WATER', 'COAST']:
+                self.map_graph_navy.add_node(i.upper())
+
+        locations = [i.upper() for i in locations]
+
+        for i in locations:
+            for j in locations:
+                if self.game.map.abuts('A', i, '-', j):
+                    self.map_graph_army.add_edge(i, j)
+                if self.game.map.abuts('F', i, '-', j):
+                    self.map_graph_navy.add_edge(i, j)
+
+    def get_enemy_centres(self):
+        enemy_centres = []
+        for i in self.game.map.scs:
+            if i not in self.game.get_centers(self.power_name):  # all centres not controlled by self
+                enemy_centres.append(i)
+        return enemy_centres
+
+    def get_own_units_and_locations(self):
+        return {
+            'units': self.game.get_units(self.power_name),
+            'orderable_locations': self.game.get_orderable_locations(self.power_name)
+        }
 
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
