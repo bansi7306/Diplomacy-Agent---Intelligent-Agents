@@ -1,5 +1,6 @@
 import time
 import timeout_decorator
+import random
 import networkx as nx
 from agent_baselines import Agent
 
@@ -77,6 +78,107 @@ class StudentAgent(Agent):
             'orderable_locations': self.game.get_orderable_locations(self.power_name)
         }
 
+    def classify_orders(self, possible_orders):
+        moves = []
+        holds = []
+        supports = []
+        for order in possible_orders:
+            if ' S ' in order:
+                supports.append(order)
+            elif ' - ' in order:
+                moves.append(order)
+            elif order.endswith(' H'):
+                holds.append(order)
+        return moves, holds, supports
+
+    def get_move_destination(self, order):
+        words = order.split(' ')
+        dash_index = words.index('-')
+        return words[dash_index + 1]
+
+    def distance_score(self, graph, destination, enemy_centres):
+        if destination not in graph:
+            return 0
+        try:
+            paths = nx.shortest_path(graph, source=destination)
+        except nx.NodeNotFound:
+            return 0
+
+        min_dist = 1000
+        for centre in enemy_centres:
+            if centre in paths:
+                dist = len(paths[centre]) - 1
+                if dist < min_dist:
+                    min_dist = dist
+
+        if min_dist == 1000:
+            return 0
+
+        return max(0, 5 - min_dist)
+
+    def is_move_supportable(self, move_order, all_possible_orders, own_orderable_locations):
+        for other_loc in own_orderable_locations:
+            for candidate in all_possible_orders.get(other_loc, []):
+                if ' S ' in candidate and move_order in candidate:
+                    return True
+        return False
+    
+    def is_contested(self, destination):
+        for power_name in self.game.powers.keys():
+            if power_name == self.power_name:
+                continue
+            for unit in self.game.get_units(power_name):
+                unit_loc = unit.split(' ')[1]
+                if unit_loc == destination:
+                    return True
+        return False
+
+    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag):
+        if is_hold:
+            return 1.0
+        score = distance_score_val
+        if is_supportable:
+            score += 2
+        if is_contested_flag:
+            score -= 3
+        return score
+
+    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
+        '''
+        Scores every candidate order at one location during a Movement phase,
+        and returns the best one as a string.
+        '''
+        possible_orders = all_possible_orders.get(loc, [])
+        if not possible_orders:
+            return None
+ 
+        moves, holds, supports = self.classify_orders(possible_orders)
+ 
+        scored_candidates = []
+ 
+        for move in moves:
+            unit_type = move[0]
+            graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
+            destination = self.get_move_destination(move)
+ 
+            dist_score = self.distance_score(graph, destination, enemy_centres)
+            supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
+            contested = self.is_contested(destination)
+ 
+            total_score = self.score_order(False, dist_score, supportable, contested)
+            scored_candidates.append((total_score, move))
+ 
+        for hold in holds:
+            total_score = self.score_order(True, 0, False, False)
+            scored_candidates.append((total_score, hold))
+ 
+        if not scored_candidates:
+            return possible_orders[0]
+ 
+        max_score = max(s for s, o in scored_candidates)
+        top_candidates = [o for s, o in scored_candidates if s == max_score]
+        return random.choice(top_candidates)
+
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
         # do not make changes to the following codes
@@ -89,7 +191,33 @@ class StudentAgent(Agent):
 
         '''Implement your agent here.'''
         
-        return [] 
+        own_info = self.get_own_units_and_locations()
+        orderable_locations = own_info['orderable_locations']
+ 
+        if not orderable_locations:
+            return []
+ 
+        all_possible_orders = self.game.get_all_possible_orders()
+ 
+        if self.game.phase_type != 'M':
+            power_orders = []
+            for loc in orderable_locations:
+                possible = all_possible_orders.get(loc, [])
+                if possible:
+                    power_orders.append(random.choice(possible))
+            return power_orders
+ 
+        enemy_centres = self.get_enemy_centres()
+ 
+        power_orders = []
+        for loc in orderable_locations:
+            best_order = self.score_movement_location(
+                loc, all_possible_orders, orderable_locations, enemy_centres
+            )
+            if best_order:
+                power_orders.append(best_order)
+ 
+        return power_orders
 
         '''
         Return a list of orders. Each order is a string, with specific format. For the format, read the game rule and game engine documentation.
