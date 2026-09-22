@@ -49,7 +49,7 @@ class StudentAgent(Agent):
         self.map_graph_army = nx.Graph()
         self.map_graph_navy = nx.Graph()
 
-        locations = list(self.game.map.loc_type.keys()) # locations with '/' are not real provinces
+        locations = list(self.game.map.loc_type.keys())
 
         for i in locations:
             if self.game.map.loc_type[i] in ['LAND', 'COAST']:
@@ -194,14 +194,17 @@ class StudentAgent(Agent):
         top_candidates = [o for s, o in scored_candidates if s == max_score]
         return random.choice(top_candidates)
     
+    #This function returns the supply centres we currently control. It's used as the safety target for the retreat scoring
     def get_own_centres(self):
         return self.game.get_centers(self.power_name)
 
+    #This function pulls the destination out of a retreat order string
     def get_retreat_destination(self, order):
         words = order.split(' ')
         r_index = words.index('R')
         return words[r_index + 1]
 
+    #This function splits a locations legal orders into retreats and disbands
     def classify_retreat_orders(self, possible_orders):
         retreats = []
         disbands = []
@@ -212,6 +215,7 @@ class StudentAgent(Agent):
                 disbands.append(order)
         return retreats, disbands
 
+    #This function then scores every retreat option by safety. This is done be evaluating the closeness to our own centres, and also avoiding contested spots and returns the best one.
     def score_retreat_location(self, loc, all_possible_orders, own_centres):
         possible_orders = all_possible_orders.get(loc, [])
         if not possible_orders:
@@ -238,16 +242,19 @@ class StudentAgent(Agent):
         top_candidates = [o for s, o in scored_candidates if s == max_score]
         return random.choice(top_candidates)
 
+    #This calculates how many units we're allowed to build this turn
     def get_required_builds(self):
         own_centres = self.get_own_centres()
         own_units = self.game.get_units(self.power_name)
         return max(0, len(own_centres) - len(own_units))
 
+    #This function is for disbanding and finds out how many units we're forced to disband this turn
     def get_required_disbands(self):
         own_centres = self.get_own_centres()
         own_units = self.game.get_units(self.power_name)
         return max(0, len(own_units) - len(own_centres))
 
+    #This function splits a locations legal orders into builds and disbands
     def classify_adjustment_orders(self, possible_orders):
         builds = []
         disbands = []
@@ -258,19 +265,7 @@ class StudentAgent(Agent):
                 disbands.append(order)
         return builds, disbands
 
-    def count_adjacent_enemies(self, graph, loc):
-        if loc not in graph:
-            return 0
-        count = 0
-        for neighbour in graph.neighbors(loc):
-            for power_name in self.game.powers.keys():
-                if power_name == self.power_name:
-                    continue
-                for unit in self.game.get_units(power_name):
-                    if unit.split(' ')[1] == neighbour:
-                        count += 1
-        return count
-
+    #This function scores a home centres best build option by closeness to enemy territory, we want to build near where the fighting is.
     def score_build_location(self, loc, all_possible_orders, enemy_centres):
         possible_orders = all_possible_orders.get(loc, [])
         builds, disbands = self.classify_adjustment_orders(possible_orders)
@@ -290,6 +285,21 @@ class StudentAgent(Agent):
 
         return best_order, best_score
 
+    #This function counts how many enemy units are adjacent to a location, it;s then used as a danger/exposure signal for retreating
+    def count_adjacent_enemies(self, graph, loc):
+        if loc not in graph:
+            return 0
+        count = 0
+        for neighbour in graph.neighbors(loc):
+            for power_name in self.game.powers.keys():
+                if power_name == self.power_name:
+                    continue
+                for unit in self.game.get_units(power_name):
+                    if unit.split(' ')[1] == neighbour:
+                        count += 1
+        return count
+
+    #This scores a unit for disbanding, we want to disband the most dangerous/exposed units, these score the highest and get disbanded first. Distance to enemy territory is treated as the tie breaker.
     def score_disband_location(self, loc, all_possible_orders, enemy_centres):
         possible_orders = all_possible_orders.get(loc, [])
         _, disbands = self.classify_adjustment_orders(possible_orders)
@@ -304,8 +314,6 @@ class StudentAgent(Agent):
         danger_score = self.count_adjacent_enemies(graph, loc)
         tiebreak_score = self.distance_score(graph, loc, enemy_centres)
 
-        # combine so danger dominates, distance only breaks ties between
-        # equally-dangerous units (scaled down so it can't outweigh danger)
         total_score = (danger_score * 10) + (5 - tiebreak_score)
 
         return disband_order, total_score
@@ -362,7 +370,7 @@ class StudentAgent(Agent):
                     disband_order, score = self.score_disband_location(loc, all_possible_orders, enemy_centres)
                     if disband_order:
                         scored_disbands.append((score, disband_order))
-                scored_disbands.sort(reverse=True, key=lambda x: x[0])  # descending - most exposed/dangerous first
+                scored_disbands.sort(reverse=True, key=lambda x: x[0])
                 power_orders = [order for score, order in scored_disbands[:required_disbands]]
 
             return power_orders
