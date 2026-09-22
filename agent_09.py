@@ -41,6 +41,7 @@ class StudentAgent(Agent):
 
         '''Implement your agent here.'''
 
+    #Builds an army and navy adjacency graphs from the map data, it is used for distance scoring and resused from GreedyAgent
     def build_map_graphs(self):
         if not self.game:
             raise Exception('Game Not Initialised. Cannot Build Map Graphs.')
@@ -65,37 +66,47 @@ class StudentAgent(Agent):
                 if self.game.map.abuts('F', i, '-', j):
                     self.map_graph_navy.add_edge(i, j)
 
+    #This function returns every supply center not currently controlled by us, this is essentially our target list for scoring moves
     def get_enemy_centres(self):
         enemy_centres = []
         for i in self.game.map.scs:
-            if i not in self.game.get_centers(self.power_name):  # all centres not controlled by self
+            #This is all the centers not controlled by us
+            if i not in self.game.get_centers(self.power_name):
                 enemy_centres.append(i)
         return enemy_centres
 
+    #This bundles our own units and orderable locations into one dict for easy lookup
     def get_own_units_and_locations(self):
         return {
             'units': self.game.get_units(self.power_name),
             'orderable_locations': self.game.get_orderable_locations(self.power_name)
         }
 
+    #This splits a locations legal orders into moves, holds and supports so that each move type can be scored differently
     def classify_orders(self, possible_orders):
         moves = []
         holds = []
         supports = []
         for order in possible_orders:
+            #These are support moves
             if ' S ' in order:
                 supports.append(order)
+            #These are the movement moves
             elif ' - ' in order:
                 moves.append(order)
+            #And this is our holding moves
             elif order.endswith(' H'):
                 holds.append(order)
         return moves, holds, supports
 
+    #This function pulls the destinations location of out a move order string to make processing easier
+    #'A PAR - BUR' turns into 'BUR'
     def get_move_destination(self, order):
         words = order.split(' ')
         dash_index = words.index('-')
         return words[dash_index + 1]
 
+    #This fucntion scores a destination by how close it is to the nearest enemy center by using the map graph to find the shortest path
     def distance_score(self, graph, destination, enemy_centres):
         if destination not in graph:
             return 0
@@ -116,6 +127,7 @@ class StudentAgent(Agent):
 
         return max(0, 5 - min_dist)
 
+    #This checks if any other units that we control has a legal support order backing this specific move
     def is_move_supportable(self, move_order, all_possible_orders, own_orderable_locations):
         for other_loc in own_orderable_locations:
             for candidate in all_possible_orders.get(other_loc, []):
@@ -123,6 +135,7 @@ class StudentAgent(Agent):
                     return True
         return False
     
+    #This function checks if an enemy unit is currently occupying the space of our intended move destination
     def is_contested(self, destination):
         for power_name in self.game.powers.keys():
             if power_name == self.power_name:
@@ -133,6 +146,7 @@ class StudentAgent(Agent):
                     return True
         return False
 
+    #This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
     def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag):
         if is_hold:
             return 1.0
@@ -143,6 +157,7 @@ class StudentAgent(Agent):
             score -= 3
         return score
 
+    #This scores every candidate order at one location and returns the best one only for the movement phase
     def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
         '''
         Scores every candidate order at one location during a Movement phase,
@@ -186,6 +201,7 @@ class StudentAgent(Agent):
             self.game.set_orders(power_name, all_power_orders[power_name])
         self.game.process()
 
+    #This is called every turn and returns our full list of orders
     @timeout_decorator.timeout(1)
     def get_actions(self):
 
