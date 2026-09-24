@@ -33,7 +33,10 @@ class StudentAgent(Agent):
         self.map_graph_army = None
         self.map_graph_navy = None
 
-        '''Implement your agent here.'''
+        '''Implement your agent here.
+        Opponent Model'''
+        self.opponent_model = {}
+
 
     @timeout_decorator.timeout(1)
     def new_game(self, game, power_name):
@@ -42,6 +45,226 @@ class StudentAgent(Agent):
         self.build_map_graphs()
 
         '''Implement your agent here.'''
+
+        # Initialise opponent aggression for each new game
+        self.opponent_model = {}
+
+        for opponent in self.game.powers:
+            if opponent != self.power_name:
+                self.opponent_model[opponent] = {
+                    'aggression': 0.0
+                }
+
+    # Updates opponent aggression based on their observed orders
+    def update_opponent_aggression(self, all_power_orders):
+
+        for opponent, orders in all_power_orders.items():
+
+            # Ignore our own orders
+            if opponent == self.power_name:
+                continue
+
+            if opponent not in self.opponent_model:
+                self.opponent_model[opponent] = {
+                    'aggression': 0.0
+                }
+
+            if not orders:
+                continue
+
+            attack_count = 0
+
+            # Count how many orders involve attacking our units or centres
+            own_units = self.game.get_units(self.power_name)
+            own_centres = self.game.get_centers(self.power_name)
+
+            own_locations = {
+                unit.split()[1] for unit in own_units
+            }
+
+            own_territory = own_locations.union(own_centres)
+
+            for order in orders:
+
+                if ' - ' not in order:
+                    continue
+
+                parts = order.split()
+
+                if '-' not in parts:
+                    continue
+
+                destination = parts[parts.index('-') + 1]
+
+                if destination in own_territory:
+                    attack_count += 1
+
+            # Proportion of opponent orders that attack us
+            attack_ratio = attack_count / len(orders)
+
+            # Exponential moving average
+            old_aggression = self.opponent_model[opponent]['aggression']
+
+            new_aggression = (
+                0.7 * old_aggression
+                + 0.3 * attack_ratio
+            )
+
+            self.opponent_model[opponent]['aggression'] = new_aggression
+
+    # Measures how much pressure an opponent places on our territory
+    def get_opponent_pressure(self, opponent):
+
+        enemy_units = self.game.get_units(opponent)
+
+        own_units = self.game.get_units(self.power_name)
+        own_centres = self.game.get_centers(self.power_name)
+
+        own_locations = {
+            unit.split()[1] for unit in own_units
+        }
+
+        own_territory = own_locations.union(own_centres)
+
+        if not own_territory:
+            return 0.0
+
+        threatened_locations = set()
+
+        for unit in enemy_units:
+
+            parts = unit.split()
+
+            unit_type = parts[0]
+            location = parts[1]
+
+            graph = (
+                self.map_graph_army
+                if unit_type == 'A'
+                else self.map_graph_navy
+            )
+
+            if location not in graph:
+                continue
+
+            # Find locations the enemy unit can reach
+            for neighbour in graph.neighbors(location):
+
+                if neighbour in own_territory:
+                    threatened_locations.add(neighbour)
+
+        # Proportion of our territory threatened by this opponent
+        pressure = (
+            len(threatened_locations)
+            / len(own_territory)
+        )
+
+        return pressure
+
+    # Estimates an opponent's strength relative to all active powers
+    def get_opponent_strength(self, opponent):
+
+        opponent_units = len(
+            self.game.get_units(opponent)
+        )
+
+        total_units = 0
+
+        for power in self.game.powers:
+
+            total_units += len(
+                self.game.get_units(power)
+            )
+
+        if total_units == 0:
+            return 0.0
+
+        return opponent_units / total_units
+
+    # Combines aggression, pressure and strength into a threat score
+    def get_opponent_threat(self, opponent):
+
+        aggression = self.opponent_model.get(
+            opponent, {}
+        ).get('aggression', 0.0)
+
+        pressure = self.get_opponent_pressure(
+            opponent
+        )
+
+        strength = self.get_opponent_strength(
+            opponent
+        )
+
+        threat = (
+            0.4 * aggression
+            + 0.4 * pressure
+            + 0.2 * strength
+        )
+
+        return threat
+
+    # Identifies which opponent occupies a location
+    def get_location_opponent(self, location):
+
+        for opponent in self.game.powers:
+
+            if opponent == self.power_name:
+                continue
+
+            for unit in self.game.get_units(opponent):
+
+                unit_location = unit.split()[1]
+
+                if unit_location == location:
+                    return opponent
+
+        return None
+
+    # Calculates the highest opponent threat around a destination
+    def get_destination_threat(self, destination):
+
+        highest_threat = 0.0
+
+        for opponent in self.game.powers:
+
+            if opponent == self.power_name:
+                continue
+
+            enemy_units = self.game.get_units(opponent)
+
+            for unit in enemy_units:
+
+                parts = unit.split()
+
+                unit_type = parts[0]
+                location = parts[1]
+
+                graph = (
+                    self.map_graph_army
+                    if unit_type == 'A'
+                    else self.map_graph_navy
+                )
+
+                if location not in graph:
+                    continue
+
+                # Check whether the opponent occupies or threatens the destination
+                if (
+                    location == destination
+                    or destination in graph.neighbors(location)
+                ):
+
+                    threat = self.get_opponent_threat(opponent)
+
+                    highest_threat = max(
+                        highest_threat,
+                        threat
+                    )
+
+                    break
+
+        return highest_threat
 
     #Builds an army and navy adjacency graphs from the map data, it is used for distance scoring and resused from GreedyAgent
     def build_map_graphs(self):
@@ -148,7 +371,7 @@ class StudentAgent(Agent):
                     return True
         return False
 
-    #This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
+    '''This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
     def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag):
         if is_hold:
             return 1.0
@@ -157,6 +380,26 @@ class StudentAgent(Agent):
             score += 2
         if is_contested_flag:
             score -= 3
+        return score
+
+    #This is a combination of Ben's strategy and Bansi's oppeonent model'''
+    
+    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, opponent_threat=0.0):
+
+        if is_hold:
+            return 1.0
+
+        score = distance_score_val
+
+        if is_supportable:
+            score += 2
+
+        if is_contested_flag:
+            score -= 3
+
+        # Opponent modelling contribution
+        score -= 2 * opponent_threat
+
         return score
 
     #This scores every candidate order at one location and returns the best one only for the movement phase
@@ -179,13 +422,33 @@ class StudentAgent(Agent):
             graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
             destination = self.get_move_destination(move)
 
+            '''Ben's code
+            #dist_score = self.distance_score(graph, destination, enemy_centres)
+            #supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
+            #contested = self.is_contested(destination)
+ 
+            #total_score = self.score_order(False, dist_score, supportable, contested)
+
+            #Bansi's code combined with Ben's'''
+
             dist_score = self.distance_score(graph, destination, enemy_centres)
+
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
+
             contested = self.is_contested(destination)
 
-            total_score = self.score_order(False, dist_score, supportable, contested)
+            # Get opponent threat associated with this destination
+            opponent_threat = self.get_destination_threat(destination)
 
-            #Stage 5 implementation of the shallow lookahead
+            total_score = self.score_order(
+                False,
+                dist_score,
+                supportable,
+                contested,
+                opponent_threat
+            )
+
+            # Stage 5 implementation of the shallow lookahead
             if not contested and not supportable:
                 if self.could_enemy_contest(destination, all_possible_orders):
                     total_score -= 2
@@ -459,6 +722,11 @@ class StudentAgent(Agent):
 
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
+
+        # Observe opponents before the game state changes
+        if self.game.phase_type == 'M':
+            self.update_opponent_aggression(all_power_orders)
+
         # do not make changes to the following codes
         for power_name in all_power_orders.keys():
             self.game.set_orders(power_name, all_power_orders[power_name])
