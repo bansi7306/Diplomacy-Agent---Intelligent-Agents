@@ -440,7 +440,6 @@ class StudentAgent(Agent):
             # Get opponent threat associated with this destination
             opponent_threat = self.get_destination_threat(destination)
 
-            
             total_score = self.score_order(
                 False,
                 dist_score,
@@ -449,6 +448,10 @@ class StudentAgent(Agent):
                 opponent_threat
             )
 
+            # Stage 5 implementation of the shallow lookahead
+            if not contested and not supportable:
+                if self.could_enemy_contest(destination, all_possible_orders):
+                    total_score -= 2
 
             scored_candidates.append((total_score, move))
 
@@ -553,6 +556,113 @@ class StudentAgent(Agent):
 
         return best_order, best_score
 
+    #This function scores every candidate order at one location and returns the top 3 options, its sorted best first so that collisons have fallback options
+    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
+        possible_orders = all_possible_orders.get(loc, [])
+        if not possible_orders:
+            return []
+
+        moves, holds, supports = self.classify_orders(possible_orders)
+
+        scored_candidates = []
+
+        for move in moves:
+            unit_type = move[0]
+            graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
+            destination = self.get_move_destination(move)
+
+            dist_score = self.distance_score(graph, destination, enemy_centres)
+            supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
+            contested = self.is_contested(destination)
+
+            total_score = self.score_order(False, dist_score, supportable, contested)
+            scored_candidates.append((total_score, move))
+
+        for hold in holds:
+            total_score = self.score_order(True, 0, False, False)
+            scored_candidates.append((total_score, hold))
+
+        if not scored_candidates:
+            return [(0, possible_orders[0])]
+
+        scored_candidates.sort(reverse=True, key=lambda x: x[0])
+        return scored_candidates[:3]
+
+    #This function constructs a support order string for one unit that is backing up another unit's move
+    def build_support_order(self, supporting_unit_type, supporting_loc, winning_move):
+        return f'{supporting_unit_type} {supporting_loc} S {winning_move}'
+
+    #This function then checks if a constructued support order is actually a legal move for the unit in question
+    def is_support_legal(self, support_order, all_possible_orders, loc):
+        return support_order in all_pxossible_orders.get(loc, [])
+
+    #This function finds units that are targetting the same destination and resolves them by letting the winner keep its first choice move, checking if the loser can support it, and if not make the loser fall to its 2nd/3rd choice
+    def resolve_collisions(self, top3_by_location, all_possible_orders):
+        final_orders = {}
+        chosen_index = {loc: 0 for loc in top3_by_location}
+
+        def current_pick(loc):
+            candidates = top3_by_location[loc]
+            idx = chosen_index[loc]
+            if idx >= len(candidates):
+                return None
+            return candidates[idx][1]
+
+        def get_destination_if_move(order):
+            if ' - ' in order:
+                return self.get_move_destination(order)
+            return None
+
+        locations = list(top3_by_location.keys())
+
+        #This group the current picks by destination to find collisions
+        destination_map = {}
+        for loc in locations:
+            order = current_pick(loc)
+            dest = get_destination_if_move(order) if order else None
+            if dest:
+                destination_map.setdefault(dest, []).append(loc)
+
+        collided_locs = set()
+        winners = {}
+        for dest, locs_here in destination_map.items():
+            if len(locs_here) > 1:
+                #The winner is the highest score among current picks at this destination
+                best_loc = max(locs_here, key=lambda l: top3_by_location[l][chosen_index[l]][0])
+                winners[dest] = best_loc
+                for l in locs_here:
+                    if l != best_loc:
+                        collided_locs.add(l)
+
+        #We then resolve each collided (losing) unit
+        for loc in collided_locs:
+            candidates = top3_by_location[loc]
+            order = candidates[chosen_index[loc]][1]
+            dest = get_destination_if_move(order)
+            winner_loc = winners[dest]
+            winning_move = current_pick(winner_loc)
+            unit_type = order[0]
+
+            support_order = self.build_support_order(unit_type, loc, winning_move)
+
+            if self.is_support_legal(support_order, all_possible_orders, loc):
+                final_orders[loc] = support_order
+            else:
+                # fall to #2, then #3, then hold
+                next_idx = chosen_index[loc] + 1
+                if next_idx < len(candidates):
+                    final_orders[loc] = candidates[next_idx][1]
+                else:
+                    final_orders[loc] = f'{unit_type} {loc} H'
+
+        #Everyone not involved in a collision just takes their #1 pick
+        for loc in locations:
+            if loc not in final_orders:
+                order = current_pick(loc)
+                final_orders[loc] = order if order else f'{loc[0]} {loc} H'
+
+        return final_orders
+
     #This function counts how many enemy units are adjacent to a location, it;s then used as a danger/exposure signal for retreating
     def count_adjacent_enemies(self, graph, loc):
         if loc not in graph:
@@ -586,112 +696,29 @@ class StudentAgent(Agent):
 
         return disband_order, total_score
 
-    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
-        '''
-        Scores every candidate order at one location during a Movement phase.
-        Returns a list of up to 3 (score, order) tuples, sorted best-first,
-        so Stage 4 can fall back to the 2nd/3rd choice when collisions occur.
-        '''
-        possible_orders = all_possible_orders.get(loc, [])
-        if not possible_orders:
-            return []
+    #This function checks if any enemy unit has a legal move into this destination for this turn, it's a one turn look ahead check
+    def could_enemy_contest(self, destination, all_possible_orders):
+        for power_name in self.game.powers.keys():
+            if power_name == self.power_name:
+                continue
+            for loc, orders in all_possible_orders.items():
+                for order in orders:
+                    if ' - ' not in order:
+                        continue
+                    unit = ' '.join(order.split(' ')[:2])
+                    owner = self.get_unit_owner(unit)
+                    if owner != power_name:
+                        continue
+                    if self.get_move_destination(order) == destination:
+                        return True
+        return False
 
-        moves, holds, supports = self.classify_orders(possible_orders)
-
-        scored_candidates = []
-
-        for move in moves:
-            unit_type = move[0]
-            graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
-            destination = self.get_move_destination(move)
-
-            dist_score = self.distance_score(graph, destination, enemy_centres)
-            supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
-            contested = self.is_contested(destination)
-
-            total_score = self.score_order(False, dist_score, supportable, contested)
-            scored_candidates.append((total_score, move))
-
-        for hold in holds:
-            total_score = self.score_order(True, 0, False, False)
-            scored_candidates.append((total_score, hold))
-
-        if not scored_candidates:
-            return [(0, possible_orders[0])]
-
-        scored_candidates.sort(reverse=True, key=lambda x: x[0])
-        return scored_candidates[:3]
-
-    def resolve_collisions(self, top3_by_location, all_possible_orders):
-        '''
-        Takes {loc: [(score, order), ...]} (top 3 candidates per location) and
-        resolves same-destination collisions among the current #1 choices.
-        Returns a final dict of {loc: chosen_order_string}.
-        '''
-        final_orders = {}
-        chosen_index = {loc: 0 for loc in top3_by_location}
-
-        def current_pick(loc):
-            candidates = top3_by_location[loc]
-            idx = chosen_index[loc]
-            if idx >= len(candidates):
-                return None
-            return candidates[idx][1]
-
-        def get_destination_if_move(order):
-            if ' - ' in order:
-                return self.get_move_destination(order)
-            return None
-
-        locations = list(top3_by_location.keys())
-
-        # group current picks by destination to find collisions
-        destination_map = {}
-        for loc in locations:
-            order = current_pick(loc)
-            dest = get_destination_if_move(order) if order else None
-            if dest:
-                destination_map.setdefault(dest, []).append(loc)
-
-        collided_locs = set()
-        winners = {}
-        for dest, locs_here in destination_map.items():
-            if len(locs_here) > 1:
-                # winner = highest score among current picks at this destination
-                best_loc = max(locs_here, key=lambda l: top3_by_location[l][chosen_index[l]][0])
-                winners[dest] = best_loc
-                for l in locs_here:
-                    if l != best_loc:
-                        collided_locs.add(l)
-
-        # resolve each collided (losing) unit
-        for loc in collided_locs:
-            candidates = top3_by_location[loc]
-            order = candidates[chosen_index[loc]][1]
-            dest = get_destination_if_move(order)
-            winner_loc = winners[dest]
-            winning_move = current_pick(winner_loc)
-            unit_type = order[0]
-
-            support_order = self.build_support_order(unit_type, loc, winning_move)
-
-            if self.is_support_legal(support_order, all_possible_orders, loc):
-                final_orders[loc] = support_order
-            else:
-                # fall to #2, then #3, then hold
-                next_idx = chosen_index[loc] + 1
-                if next_idx < len(candidates):
-                    final_orders[loc] = candidates[next_idx][1]
-                else:
-                    final_orders[loc] = f'{unit_type} {loc} H'
-
-        # everyone not involved in a collision just takes their #1 pick
-        for loc in locations:
-            if loc not in final_orders:
-                order = current_pick(loc)
-                final_orders[loc] = order if order else f'{loc[0]} {loc} H'
-
-        return final_orders
+    #This then looks up which power controls a given unit string so that we can judge their friendliness
+    def get_unit_owner(self, unit):
+        for power_name in self.game.powers.keys():
+            if unit in self.game.get_units(power_name):
+                return power_name
+        return None
 
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
