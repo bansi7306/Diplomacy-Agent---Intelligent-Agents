@@ -53,8 +53,7 @@ class StudentAgent(Agent):
             if opponent != self.power_name:
                 self.opponent_model[opponent] = {
                     'aggression': 0.0,
-                    'relationship_score': 0.0,
-                    'relationship': 'neutral'
+                    'relationship_score': 0.0
                 }
 
     # Updates opponent aggression based on their observed orders
@@ -69,8 +68,7 @@ class StudentAgent(Agent):
             if opponent not in self.opponent_model:
                 self.opponent_model[opponent] = {
                     'aggression': 0.0,
-                    'relationship_score': 0.0,
-                    'relationship': 'neutral'
+                    'relationship_score': 0.0
                 }
 
             if not orders:
