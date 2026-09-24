@@ -1,5 +1,5 @@
 import time
-import timeout_decorator
+#import timeout_decorator
 import random
 import networkx as nx
 from agent_baselines import Agent
@@ -27,7 +27,7 @@ class StudentAgent(Agent):
     ARMY_GRAPH_DIAMETER = 10  # computed offline on the standard map's largest connected army component
     NAVY_GRAPH_DIAMETER = 13  # computed offline on the standard map's largest connected navy component
 
-    @timeout_decorator.timeout(1)
+    #@timeout_decorator.timeout(1)
     def __init__(self, agent_name='Group09Agent'):
         super().__init__(agent_name)
         self.map_graph_army = None
@@ -38,7 +38,7 @@ class StudentAgent(Agent):
         self.opponent_model = {}
 
 
-    @timeout_decorator.timeout(1)
+    #@timeout_decorator.timeout(1)
     def new_game(self, game, power_name):
         self.game = game
         self.power_name = power_name
@@ -52,7 +52,9 @@ class StudentAgent(Agent):
         for opponent in self.game.powers:
             if opponent != self.power_name:
                 self.opponent_model[opponent] = {
-                    'aggression': 0.0
+                    'aggression': 0.0,
+                    'relationship_score': 0.0,
+                    'relationship': 'neutral'
                 }
 
     # Updates opponent aggression based on their observed orders
@@ -66,7 +68,9 @@ class StudentAgent(Agent):
 
             if opponent not in self.opponent_model:
                 self.opponent_model[opponent] = {
-                    'aggression': 0.0
+                    'aggression': 0.0,
+                    'relationship_score': 0.0,
+                    'relationship': 'neutral'
                 }
 
             if not orders:
@@ -111,6 +115,108 @@ class StudentAgent(Agent):
             )
 
             self.opponent_model[opponent]['aggression'] = new_aggression
+
+    # Updates whether opponents are friendly, neutral or hostile
+    # based on their observed movement-phase orders
+    def update_opponent_relationships(self, all_power_orders):
+
+        own_units = self.game.get_units(self.power_name)
+        own_centres = self.game.get_centers(self.power_name)
+
+        own_locations = {
+            unit.split()[1] for unit in own_units
+        }
+
+        own_territory = own_locations.union(own_centres)
+
+        for opponent, orders in all_power_orders.items():
+
+            # Ignore our own orders
+            if opponent == self.power_name:
+                continue
+
+            if opponent not in self.opponent_model:
+                self.opponent_model[opponent] = {
+                    'aggression': 0.0,
+                    'relationship_score': 0.0
+                }
+
+            if not orders:
+                continue
+
+            hostile_count = 0
+            friendly_count = 0
+
+            for order in orders:
+
+                parts = order.split()
+
+                # Example: A BUR - PAR
+                # Moving into our unit's location or supply centre
+                if '-' in parts and 'S' not in parts:
+
+                    dash_index = parts.index('-')
+
+                    if dash_index + 1 < len(parts):
+                        destination = parts[dash_index + 1]
+
+                        if destination in own_territory:
+                            hostile_count += 1
+
+                # Example: A BUR S A PAR - PIC
+                # Supporting one of our units
+                elif 'S' in parts:
+
+                    support_index = parts.index('S')
+
+                    if support_index + 2 < len(parts):
+
+                        supported_unit = ' '.join(
+                            parts[support_index + 1:support_index + 3]
+                        )
+
+                        if supported_unit in own_units:
+                            friendly_count += 1
+
+            # Convert observed behaviour into a score from -1 to +1
+            behaviour_score = (
+                friendly_count - hostile_count
+            ) / len(orders)
+
+            # Gradually update the relationship using an
+            # exponential moving average
+            old_score = self.opponent_model[opponent].get('relationship_score', 0.0)
+
+            new_score = (
+                0.7 * old_score
+                + 0.3 * behaviour_score
+            )
+
+            self.opponent_model[opponent]['relationship_score'] = new_score
+
+            
+
+    # Returns a dictionary of opponent relationship scores on a 0-10 scale
+    # 0 = very friendly, 5 = neutral, 10 = very hostile
+    def get_all_opponent_relationships(self):
+
+        relationships = {}
+
+        for opponent in self.game.powers:
+
+            if opponent == self.power_name:
+                continue
+
+            relationship_score = self.opponent_model.get(
+                opponent, {}
+            ).get('relationship_score', 0.0)
+
+            # Convert -1 to +1 into a 0 to 10 scale
+            scaled_score = 5 - (5 * relationship_score)
+
+            relationships[opponent] = round(scaled_score, 2)
+
+        return relationships
 
     # Measures how much pressure an opponent places on our territory
     def get_opponent_pressure(self, opponent):
@@ -557,7 +663,7 @@ class StudentAgent(Agent):
         return best_order, best_score
 
     #This function scores every candidate order at one location and returns the top 3 options, its sorted best first so that collisons have fallback options
-    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
+    def score_movement_location_original(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
         possible_orders = all_possible_orders.get(loc, [])
         if not possible_orders:
             return []
@@ -594,7 +700,7 @@ class StudentAgent(Agent):
 
     #This function then checks if a constructued support order is actually a legal move for the unit in question
     def is_support_legal(self, support_order, all_possible_orders, loc):
-        return support_order in all_pxossible_orders.get(loc, [])
+        return support_order in all_possible_orders.get(loc, [])
 
     #This function finds units that are targetting the same destination and resolves them by letting the winner keep its first choice move, checking if the loser can support it, and if not make the loser fall to its 2nd/3rd choice
     def resolve_collisions(self, top3_by_location, all_possible_orders):
@@ -720,12 +826,13 @@ class StudentAgent(Agent):
                 return power_name
         return None
 
-    @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
+    #@timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
 
         # Observe opponents before the game state changes
         if self.game.phase_type == 'M':
             self.update_opponent_aggression(all_power_orders)
+            self.update_opponent_relationships(all_power_orders)
 
         # do not make changes to the following codes
         for power_name in all_power_orders.keys():
@@ -733,7 +840,7 @@ class StudentAgent(Agent):
         self.game.process()
 
     #This is called every turn and returns our full list of orders
-    @timeout_decorator.timeout(1)
+    #@timeout_decorator.timeout(1)
     def get_actions(self):
 
         '''Implement your agent here.'''
