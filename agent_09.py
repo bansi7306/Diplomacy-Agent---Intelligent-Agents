@@ -44,6 +44,10 @@ class StudentAgent(Agent):
         self.power_name = power_name
         self.build_map_graphs()
 
+        # The map never changes, so compute every shortest-path distance once per game
+        self.army_distances = dict(nx.all_pairs_shortest_path_length(self.map_graph_army))
+        self.navy_distances = dict(nx.all_pairs_shortest_path_length(self.map_graph_navy))
+
         '''Implement your agent here.'''
 
         # Initialise opponent aggression for each new game
@@ -55,6 +59,10 @@ class StudentAgent(Agent):
                     'aggression': 0.0,
                     'relationship_score': 0.0
                 }
+
+        # System 2: persistent strategic target
+        self.current_target = None
+        self.turns_since_target_progress = 0
 
     # Updates opponent aggression based on their observed orders
     def update_opponent_aggression(self, all_power_orders):
@@ -359,7 +367,11 @@ class StudentAgent(Agent):
                     or destination in graph.neighbors(location)
                 ):
 
-                    threat = self.get_opponent_threat(opponent, weights)
+                    # Threat per opponent only changes once per turn, so compute
+                    # it the first time it's needed this turn and reuse it
+                    if opponent not in self.opponent_threat_cache:
+                        self.opponent_threat_cache[opponent] = self.get_opponent_threat(opponent, weights)
+                    threat = self.opponent_threat_cache[opponent]
 
                     highest_threat = max(
                         highest_threat,
@@ -404,6 +416,52 @@ class StudentAgent(Agent):
                 enemy_centres.append(i)
         return enemy_centres
 
+    def choose_strategic_target(self, enemy_centres, weights):
+        '''
+        Picks one enemy centre to commit to as a multi-turn campaign target,
+        rather than re-deciding from scratch every turn. Weighs candidates by
+        how reachable they are (distance) and how dangerous the area is
+        (opponent threat), favouring close, low-threat targets.
+        '''
+        best_target = None
+        best_score = -1000
+
+        for centre in enemy_centres:
+            graph = self.map_graph_army if centre in self.map_graph_army else self.map_graph_navy
+            if centre not in graph:
+                continue
+
+            reach_score = self.distance_score(graph, centre, [centre], weights)
+            threat = self.get_destination_threat(centre, weights)
+
+            candidate_score = reach_score - (weights['opponent_multiplier'] * threat)
+
+            if candidate_score > best_score:
+                best_score = candidate_score
+                best_target = centre
+
+        return best_target
+
+    def update_strategic_target(self, enemy_centres, weights):
+        '''
+        Decides whether to keep the current strategic target or pick a new
+        one. Replaces the target if we've captured it (no longer in enemy
+        centres), if it's become unreachable, or if we've made no progress
+        toward it for several turns (stuck - cut losses).
+        '''
+        if self.current_target is None or self.current_target not in enemy_centres:
+            # target captured, or never set - pick a fresh one
+            self.current_target = self.choose_strategic_target(enemy_centres, weights)
+            self.turns_since_target_progress = 0
+            return
+
+        self.turns_since_target_progress += 1
+
+        # stuck too long on the same target - abandon and re-pick
+        if self.turns_since_target_progress > 6:
+            self.current_target = self.choose_strategic_target(enemy_centres, weights)
+            self.turns_since_target_progress = 0
+
     #This bundles our own units and orderable locations into one dict for easy lookup
     def get_own_units_and_locations(self):
         return {
@@ -439,17 +497,17 @@ class StudentAgent(Agent):
     def distance_score(self, graph, destination, enemy_centres, weights):
         if destination not in graph:
             return 0
-        try:
-            paths = nx.shortest_path(graph, source=destination)
-        except nx.NodeNotFound:
-            return 0
+
+        # Lookup into distances precomputed in new_game(), instead of a
+        # full shortest-path search on every call
+        all_lengths = self.army_distances if graph is self.map_graph_army else self.navy_distances
+        lengths = all_lengths.get(destination, {})
 
         min_dist = 1000
         for centre in enemy_centres:
-            if centre in paths:
-                dist = len(paths[centre]) - 1
-                if dist < min_dist:
-                    min_dist = dist
+            dist = lengths.get(centre)
+            if dist is not None and dist < min_dist:
+                min_dist = dist
 
         if min_dist == 1000:
             return 0
@@ -466,14 +524,7 @@ class StudentAgent(Agent):
     
     #This function checks if an enemy unit is currently occupying the space of our intended move destination
     def is_contested(self, destination):
-        for power_name in self.game.powers.keys():
-            if power_name == self.power_name:
-                continue
-            for unit in self.game.get_units(power_name):
-                unit_loc = unit.split(' ')[1]
-                if unit_loc == destination:
-                    return True
-        return False
+        return destination in self.enemy_occupied
 
     #This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
     #This is a combination of Ben's strategy and Bansi's oppeonent model'''
@@ -517,6 +568,12 @@ class StudentAgent(Agent):
             destination = self.get_move_destination(move)
 
             dist_score = self.distance_score(graph, destination, enemy_centres, weights)
+
+            # System 2: bonus for progressing toward our committed
+            # long-term target, on top of the general "closer to any
+            # centre" signal
+            if self.current_target and destination == self.current_target:
+                dist_score += 3
 
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
 
@@ -597,7 +654,7 @@ class StudentAgent(Agent):
 
         max_score = max(s for s, o in scored_candidates)
         top_candidates = [o for s, o in scored_candidates if s == max_score]
-        return random.choice(top_candidates)
+        return sorted(top_candidates)[0]
 
     #This calculates how many units we're allowed to build this turn
     def get_required_builds(self):
@@ -641,38 +698,6 @@ class StudentAgent(Agent):
                 best_order = build
 
         return best_order, best_score
-
-    #This function scores every candidate order at one location and returns the top 3 options, its sorted best first so that collisons have fallback options
-    def score_movement_location_original(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
-        possible_orders = all_possible_orders.get(loc, [])
-        if not possible_orders:
-            return []
-
-        moves, holds, supports = self.classify_orders(possible_orders)
-
-        scored_candidates = []
-
-        for move in moves:
-            unit_type = move[0]
-            graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
-            destination = self.get_move_destination(move)
-
-            dist_score = self.distance_score(graph, destination, enemy_centres)
-            supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
-            contested = self.is_contested(destination)
-
-            total_score = self.score_order(False, dist_score, supportable, contested)
-            scored_candidates.append((total_score, move))
-
-        for hold in holds:
-            total_score = self.score_order(True, 0, False, False)
-            scored_candidates.append((total_score, hold))
-
-        if not scored_candidates:
-            return [(0, possible_orders[0])]
-
-        scored_candidates.sort(reverse=True, key=lambda x: x[0])
-        return scored_candidates[:3]
 
     #This function constructs a support order string for one unit that is backing up another unit's move
     def build_support_order(self, supporting_unit_type, supporting_loc, winning_move):
@@ -784,20 +809,7 @@ class StudentAgent(Agent):
 
     #This function checks if any enemy unit has a legal move into this destination for this turn, it's a one turn look ahead check
     def could_enemy_contest(self, destination, all_possible_orders):
-        for power_name in self.game.powers.keys():
-            if power_name == self.power_name:
-                continue
-            for loc, orders in all_possible_orders.items():
-                for order in orders:
-                    if ' - ' not in order:
-                        continue
-                    unit = ' '.join(order.split(' ')[:2])
-                    owner = self.get_unit_owner(unit)
-                    if owner != power_name:
-                        continue
-                    if self.get_move_destination(order) == destination:
-                        return True
-        return False
+        return destination in self.enemy_reachable
 
     #This then looks up which power controls a given unit string so that we can judge their friendliness
     def get_unit_owner(self, unit):
@@ -866,6 +878,118 @@ class StudentAgent(Agent):
         stage = self.get_game_stage()
         return self.STAGE_WEIGHTS[stage]
 
+        #Builds the set of every location currently occupied by an enemy unit, computed once per turn so is_contested is a fast lookup
+    def build_enemy_occupied(self):
+        occupied = set()
+        for power_name in self.game.powers.keys():
+            if power_name == self.power_name:
+                continue
+            for unit in self.game.get_units(power_name):
+                occupied.add(unit.split(' ')[1])
+        return occupied
+
+    #Builds the set of every destination any enemy unit can move into this turn, computed once per turn so the lookahead check is a fast lookup
+    def build_enemy_reachable(self, all_possible_orders):
+        unit_owner = {}
+        for power_name in self.game.powers.keys():
+            if power_name == self.power_name:
+                continue
+            for unit in self.game.get_units(power_name):
+                unit_owner[unit] = power_name
+
+        reachable = set()
+        for loc, orders in all_possible_orders.items():
+            for order in orders:
+                if ' - ' not in order:
+                    continue
+                unit = ' '.join(order.split(' ')[:2])
+                if unit in unit_owner:
+                    reachable.add(self.get_move_destination(order))
+        return reachable
+
+    def find_supportable_attacks(self, orderable_locations, all_possible_orders):
+        '''
+        Finds every possible (attacker, supporter, move) pairing where one of
+        our units has a legal move into a contested destination, and a
+        different one of our units has a legal support order for that exact
+        move. Returns a list of (attacker_loc, supporter_loc, move_order,
+        support_order) tuples - candidate deliberate supported attacks.
+        '''
+        candidates = []
+
+        for attacker_loc in orderable_locations:
+            possible_orders = all_possible_orders.get(attacker_loc, [])
+            moves, _, _ = self.classify_orders(possible_orders)
+
+            for move in moves:
+                destination = self.get_move_destination(move)
+
+                if not self.is_contested(destination):
+                    continue
+
+                for supporter_loc in orderable_locations:
+                    if supporter_loc == attacker_loc:
+                        continue
+
+                    # Cheap pre-filter: only bother constructing/checking a
+                    # support order if this location is actually adjacent to
+                    # the destination - support requires adjacency, so this
+                    # skips most impossible pairs before doing any string work.
+                    supporter_possible_orders = all_possible_orders.get(supporter_loc, [])
+                    if not any(' S ' in o and move in o for o in supporter_possible_orders):
+                        continue
+
+                    support_order = self.build_support_order(
+                        move[0], supporter_loc, move
+                    )
+
+                    if self.is_support_legal(support_order, all_possible_orders, supporter_loc):
+                        candidates.append((attacker_loc, supporter_loc, move, support_order))
+
+        return candidates
+
+    def select_committed_attacks(self, candidates):
+        '''
+        Selects a set of attack+support pairings where no unit is used more
+        than once. Candidates are ranked by value before selection, so the
+        most useful attacks claim units first regardless of the order the
+        engine returned them in:
+          0 - attacks on our System 2 strategic target
+          1 - attacks on any other enemy supply centre
+          2 - attacks on non-centre provinces (lowest value)
+        Ties are broken alphabetically for determinism.
+        Returns a dict: {loc: order} for every unit locked into a
+        deliberate attack or support this turn.
+        '''
+        enemy_centres = set(self.get_enemy_centres())
+
+        def priority(candidate):
+            attacker_loc, supporter_loc, move, support_order = candidate
+            destination = self.get_move_destination(move)
+            if self.current_target and destination == self.current_target:
+                rank = 0
+            elif destination in enemy_centres:
+                rank = 1
+            else:
+                rank = 2
+            return (rank, attacker_loc, supporter_loc, move)
+
+        candidates = sorted(candidates, key=priority)
+
+        committed_units = set()
+        locked_orders = {}
+
+        for attacker_loc, supporter_loc, move, support_order in candidates:
+            if attacker_loc in committed_units or supporter_loc in committed_units:
+                continue
+
+            locked_orders[attacker_loc] = move
+            locked_orders[supporter_loc] = support_order
+            committed_units.add(attacker_loc)
+            committed_units.add(supporter_loc)
+
+        return locked_orders
+
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
 
@@ -888,13 +1012,18 @@ class StudentAgent(Agent):
 
         weights = self.get_active_weights()
 
+        # Per-turn caches - rebuilt every turn from the current board, never carried over
+        self.opponent_threat_cache = {}
+        self.enemy_occupied = self.build_enemy_occupied()
+
         own_info = self.get_own_units_and_locations()
         orderable_locations = own_info['orderable_locations']
- 
+
         if not orderable_locations:
             return []
  
         all_possible_orders = self.game.get_all_possible_orders()
+        self.enemy_reachable = self.build_enemy_reachable(all_possible_orders)
  
         if self.game.phase_type == 'R':
             own_centres = self.get_own_centres()
@@ -933,14 +1062,26 @@ class StudentAgent(Agent):
             return power_orders
  
         enemy_centres = self.get_enemy_centres()
+        self.update_strategic_target(enemy_centres, weights)
+
+        # Deliberate supported-attack pre-pass:
+
+        # Deliberate supported-attack pre-pass: lock in units that can
+        # guarantee-win a contested centre via a planned attack+support pair,
+        # before normal per-unit scoring runs.
+        attack_candidates = self.find_supportable_attacks(orderable_locations, all_possible_orders)
+        locked_orders = self.select_committed_attacks(attack_candidates)
+
+        remaining_locations = [loc for loc in orderable_locations if loc not in locked_orders]
 
         top3_by_location = {}
-        for loc in orderable_locations:
+        for loc in remaining_locations:
             top3_by_location[loc] = self.score_movement_location(
                 loc, all_possible_orders, orderable_locations, enemy_centres, weights
             )
 
         final_orders_dict = self.resolve_collisions(top3_by_location, all_possible_orders)
+        final_orders_dict.update(locked_orders)
 
         power_orders = list(final_orders_dict.values())
         return power_orders
