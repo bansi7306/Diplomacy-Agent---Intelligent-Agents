@@ -286,7 +286,7 @@ class StudentAgent(Agent):
         return opponent_units / total_units
 
     # Combines aggression, pressure and strength into a threat score
-    def get_opponent_threat(self, opponent):
+    def get_opponent_threat(self, opponent, weights):
 
         aggression = self.opponent_model.get(
             opponent, {}
@@ -301,9 +301,9 @@ class StudentAgent(Agent):
         )
 
         threat = (
-            0.4 * aggression
-            + 0.4 * pressure
-            + 0.2 * strength
+            weights['aggression_weight'] * aggression
+            + weights['pressure_weight'] * pressure
+            + weights['strength_weight'] * strength
         )
 
         return threat
@@ -326,7 +326,7 @@ class StudentAgent(Agent):
         return None
 
     # Calculates the highest opponent threat around a destination
-    def get_destination_threat(self, destination):
+    def get_destination_threat(self, destination, weights):
 
         highest_threat = 0.0
 
@@ -359,7 +359,7 @@ class StudentAgent(Agent):
                     or destination in graph.neighbors(location)
                 ):
 
-                    threat = self.get_opponent_threat(opponent)
+                    threat = self.get_opponent_threat(opponent, weights)
 
                     highest_threat = max(
                         highest_threat,
@@ -436,7 +436,7 @@ class StudentAgent(Agent):
         return words[dash_index + 1]
 
     #This fucntion scores a destination by how close it is to the nearest enemy center by using the map graph to find the shortest path
-    def distance_score(self, graph, destination, enemy_centres):
+    def distance_score(self, graph, destination, enemy_centres, weights):
         if destination not in graph:
             return 0
         try:
@@ -454,7 +454,7 @@ class StudentAgent(Agent):
         if min_dist == 1000:
             return 0
 
-        return max(0, 5 - min_dist)
+        return max(0, weights['distance_cap'] - min_dist)
 
     #This checks if any other units that we control has a legal support order backing this specific move
     def is_move_supportable(self, move_order, all_possible_orders, own_orderable_locations):
@@ -475,39 +475,29 @@ class StudentAgent(Agent):
                     return True
         return False
 
-    '''This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
-    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag):
-        if is_hold:
-            return 1.0
-        score = distance_score_val
-        if is_supportable:
-            score += 2
-        if is_contested_flag:
-            score -= 3
-        return score
-
+    #This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
     #This is a combination of Ben's strategy and Bansi's oppeonent model'''
-    
-    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, opponent_threat=0.0):
+
+    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, weights, opponent_threat=0.0):
 
         if is_hold:
-            return 1.0
+            return weights['hold_baseline']
 
         score = distance_score_val
 
         if is_supportable:
-            score += 2
+            score += weights['support_bonus']
 
         if is_contested_flag:
-            score -= 3
+            score -= weights['contest_penalty']
 
         # Opponent modelling contribution
-        score -= 2 * opponent_threat
+        score -= weights['opponent_multiplier'] * opponent_threat
 
         return score
 
     #This scores every candidate order at one location and returns the best one only for the movement phase
-    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres):
+    def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres, weights):
         '''
         Scores every candidate order at one location during a Movement phase.
         Returns a list of up to 3 (score, order) tuples, sorted best-first,
@@ -526,41 +516,33 @@ class StudentAgent(Agent):
             graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
             destination = self.get_move_destination(move)
 
-            '''Ben's code
-            #dist_score = self.distance_score(graph, destination, enemy_centres)
-            #supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
-            #contested = self.is_contested(destination)
- 
-            #total_score = self.score_order(False, dist_score, supportable, contested)
-
-            #Bansi's code combined with Ben's'''
-
-            dist_score = self.distance_score(graph, destination, enemy_centres)
+            dist_score = self.distance_score(graph, destination, enemy_centres, weights)
 
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
 
             contested = self.is_contested(destination)
 
             # Get opponent threat associated with this destination
-            opponent_threat = self.get_destination_threat(destination)
+            opponent_threat = self.get_destination_threat(destination, weights)
 
             total_score = self.score_order(
                 False,
                 dist_score,
                 supportable,
                 contested,
+                weights,
                 opponent_threat
             )
 
             # Stage 5 implementation of the shallow lookahead
             if not contested and not supportable:
                 if self.could_enemy_contest(destination, all_possible_orders):
-                    total_score -= 2
+                    total_score -= weights['lookahead_penalty']
 
             scored_candidates.append((total_score, move))
 
         for hold in holds:
-            total_score = self.score_order(True, 0, False, False)
+            total_score = self.score_order(True, 0, False, False, weights)
             scored_candidates.append((total_score, hold))
 
         if not scored_candidates:
@@ -591,7 +573,7 @@ class StudentAgent(Agent):
         return retreats, disbands
 
     #This function then scores every retreat option by safety. This is done be evaluating the closeness to our own centres, and also avoiding contested spots and returns the best one.
-    def score_retreat_location(self, loc, all_possible_orders, own_centres):
+    def score_retreat_location(self, loc, all_possible_orders, own_centres, weights):
         possible_orders = all_possible_orders.get(loc, [])
         if not possible_orders:
             return None
@@ -607,10 +589,10 @@ class StudentAgent(Agent):
             graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
             destination = self.get_retreat_destination(retreat)
 
-            safety_score = self.distance_score(graph, destination, own_centres)
+            safety_score = self.distance_score(graph, destination, own_centres, weights)
             contested = self.is_contested(destination)
 
-            total_score = safety_score - (3 if contested else 0)
+            total_score = safety_score - (weights['contest_penalty'] if contested else 0)
             scored_candidates.append((total_score, retreat))
 
         max_score = max(s for s, o in scored_candidates)
@@ -641,7 +623,7 @@ class StudentAgent(Agent):
         return builds, disbands
 
     #This function scores a home centres best build option by closeness to enemy territory, we want to build near where the fighting is.
-    def score_build_location(self, loc, all_possible_orders, enemy_centres):
+    def score_build_location(self, loc, all_possible_orders, enemy_centres, weights):
         possible_orders = all_possible_orders.get(loc, [])
         builds, disbands = self.classify_adjustment_orders(possible_orders)
 
@@ -653,7 +635,7 @@ class StudentAgent(Agent):
         for build in builds:
             unit_type = build[0]
             graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
-            score = self.distance_score(graph, loc, enemy_centres)
+            score = self.distance_score(graph, loc, enemy_centres, weights)
             if score > best_score:
                 best_score = score
                 best_order = build
@@ -782,7 +764,7 @@ class StudentAgent(Agent):
         return count
 
     #This scores a unit for disbanding, we want to disband the most dangerous/exposed units, these score the highest and get disbanded first. Distance to enemy territory is treated as the tie breaker.
-    def score_disband_location(self, loc, all_possible_orders, enemy_centres):
+    def score_disband_location(self, loc, all_possible_orders, enemy_centres, weights):
         possible_orders = all_possible_orders.get(loc, [])
         _, disbands = self.classify_adjustment_orders(possible_orders)
 
@@ -794,9 +776,9 @@ class StudentAgent(Agent):
         graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
 
         danger_score = self.count_adjacent_enemies(graph, loc)
-        tiebreak_score = self.distance_score(graph, loc, enemy_centres)
+        tiebreak_score = self.distance_score(graph, loc, enemy_centres, weights)
 
-        total_score = (danger_score * 10) + (5 - tiebreak_score)
+        total_score = (danger_score * 10) + (weights['distance_cap'] - tiebreak_score)
 
         return disband_order, total_score
 
@@ -824,6 +806,66 @@ class StudentAgent(Agent):
                 return power_name
         return None
 
+    #-----
+    #The brain
+    #-----
+
+    def get_game_stage(self):
+        '''
+        Classifies the current game into EARLY/MID/LATE based on year,
+        used to select different scoring weights per stage rather than
+        applying one fixed weight set across the whole ~20-year game.
+        '''
+        current_phase = self.game.get_current_phase()
+        year = int(current_phase[1:5])
+
+        if year <= 1903:
+            return 'EARLY'
+        elif year <= 1910:
+            return 'MID'
+        else:
+            return 'LATE'
+
+    STAGE_WEIGHTS = {
+        'EARLY': {
+            'distance_cap': 5,
+            'support_bonus': 2,
+            'contest_penalty': 3,
+            'hold_baseline': 1.0,
+            'lookahead_penalty': 2,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
+        },
+        'MID': {
+            'distance_cap': 5,
+            'support_bonus': 2,
+            'contest_penalty': 3,
+            'hold_baseline': 1.0,
+            'lookahead_penalty': 2,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
+        },
+        'LATE': {
+            'distance_cap': 5,
+            'support_bonus': 2,
+            'contest_penalty': 3,
+            'hold_baseline': 1.0,
+            'lookahead_penalty': 2,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
+        },
+    }
+
+    def get_active_weights(self):
+        stage = self.get_game_stage()
+        return self.STAGE_WEIGHTS[stage]
+
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
 
@@ -838,11 +880,14 @@ class StudentAgent(Agent):
         self.game.process()
 
     #This is called every turn and returns our full list of orders
+    #This is called every turn and returns our full list of orders
     @timeout_decorator.timeout(1)
     def get_actions(self):
 
         '''Implement your agent here.'''
-        
+
+        weights = self.get_active_weights()
+
         own_info = self.get_own_units_and_locations()
         orderable_locations = own_info['orderable_locations']
  
@@ -855,7 +900,7 @@ class StudentAgent(Agent):
             own_centres = self.get_own_centres()
             power_orders = []
             for loc in orderable_locations:
-                best_order = self.score_retreat_location(loc, all_possible_orders, own_centres)
+                best_order = self.score_retreat_location(loc, all_possible_orders, own_centres, weights)
                 if best_order:
                     power_orders.append(best_order)
             return power_orders
@@ -870,7 +915,7 @@ class StudentAgent(Agent):
             if required_builds > 0:
                 scored_builds = []
                 for loc in orderable_locations:
-                    build_order, score = self.score_build_location(loc, all_possible_orders, enemy_centres)
+                    build_order, score = self.score_build_location(loc, all_possible_orders, enemy_centres, weights)
                     if build_order:
                         scored_builds.append((score, build_order))
                 scored_builds.sort(reverse=True, key=lambda x: x[0])
@@ -879,7 +924,7 @@ class StudentAgent(Agent):
             elif required_disbands > 0:
                 scored_disbands = []
                 for loc in orderable_locations:
-                    disband_order, score = self.score_disband_location(loc, all_possible_orders, enemy_centres)
+                    disband_order, score = self.score_disband_location(loc, all_possible_orders, enemy_centres, weights)
                     if disband_order:
                         scored_disbands.append((score, disband_order))
                 scored_disbands.sort(reverse=True, key=lambda x: x[0])
@@ -892,7 +937,7 @@ class StudentAgent(Agent):
         top3_by_location = {}
         for loc in orderable_locations:
             top3_by_location[loc] = self.score_movement_location(
-                loc, all_possible_orders, orderable_locations, enemy_centres
+                loc, all_possible_orders, orderable_locations, enemy_centres, weights
             )
 
         final_orders_dict = self.resolve_collisions(top3_by_location, all_possible_orders)
