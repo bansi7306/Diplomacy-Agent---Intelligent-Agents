@@ -367,8 +367,7 @@ class StudentAgent(Agent):
                     or destination in graph.neighbors(location)
                 ):
 
-                    # Threat per opponent only changes once per turn, so compute
-                    # it the first time it's needed this turn and reuse it
+                    #Threat per opponent only changes once per turn, so compute it the first time it's needed this turn and reuse it
                     if opponent not in self.opponent_threat_cache:
                         self.opponent_threat_cache[opponent] = self.get_opponent_threat(opponent, weights)
                     threat = self.opponent_threat_cache[opponent]
@@ -417,12 +416,6 @@ class StudentAgent(Agent):
         return enemy_centres
 
     def choose_strategic_target(self, enemy_centres, weights):
-        '''
-        Picks one enemy centre to commit to as a multi-turn campaign target,
-        rather than re-deciding from scratch every turn. Weighs candidates by
-        how reachable they are (distance) and how dangerous the area is
-        (opponent threat), favouring close, low-threat targets.
-        '''
         best_target = None
         best_score = -1000
 
@@ -443,12 +436,6 @@ class StudentAgent(Agent):
         return best_target
 
     def update_strategic_target(self, enemy_centres, weights):
-        '''
-        Decides whether to keep the current strategic target or pick a new
-        one. Replaces the target if we've captured it (no longer in enemy
-        centres), if it's become unreachable, or if we've made no progress
-        toward it for several turns (stuck - cut losses).
-        '''
         if self.current_target is None or self.current_target not in enemy_centres:
             # target captured, or never set - pick a fresh one
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
@@ -478,8 +465,7 @@ class StudentAgent(Agent):
             #These are support moves
             if ' S ' in order:
                 supports.append(order)
-            #These are the movement moves
-            elif ' - ' in order:
+            elif self.is_move_order(order) and not order.endswith(' VIA'):
                 moves.append(order)
             #And this is our holding moves
             elif order.endswith(' H'):
@@ -526,8 +512,57 @@ class StudentAgent(Agent):
     def is_contested(self, destination):
         return destination in self.enemy_occupied
 
+    #True only for genuine move orders like 'A PAR - BUR'. Supports and convoys also contain ' - ', so we check the third word instead.
+    def is_move_order(self, order):
+        parts = order.split()
+        return len(parts) >= 4 and parts[2] == '-'
+
     #This combines our scoring factors into one final score, so dfistance, support and contested are combined into one score for the candidate order
     #This is a combination of Ben's strategy and Bansi's oppeonent model'''
+
+        #Replaces moves that are guaranteed to fail because of our own units: moving into a spot one of our units stays in, or two of our units swapping places. Falls back to the next candidate, then hold.
+    def remove_self_blocks(self, final_orders, top3_by_location):
+        chosen_index = {loc: 0 for loc in final_orders}
+
+        def dest_of(order):
+            return self.get_move_destination(order)[:3] if self.is_move_order(order) else None
+
+        for _ in range(5):
+            changed = False
+            staying = {loc[:3] for loc, o in final_orders.items() if not self.is_move_order(o)}
+            moving = {loc[:3]: dest_of(o) for loc, o in final_orders.items() if self.is_move_order(o)}
+
+            for loc, order in list(final_orders.items()):
+                dest = dest_of(order)
+                if dest is None:
+                    continue
+
+                into_staying_unit = dest in staying
+                swap = moving.get(dest) == loc[:3] and loc[:3] > dest  # block only one side of a swap
+
+                if not (into_staying_unit or swap):
+                    continue
+
+                # try the next candidate for this unit, otherwise hold
+                replacement = f'{order[0]} {loc} H'
+                candidates = top3_by_location.get(loc, [])
+                idx = chosen_index[loc] + 1
+                while idx < len(candidates):
+                    alt = candidates[idx][1]
+                    alt_dest = dest_of(alt)
+                    if alt_dest is None or alt_dest not in staying:
+                        replacement = alt
+                        break
+                    idx += 1
+                chosen_index[loc] = idx
+
+                final_orders[loc] = replacement
+                changed = True
+
+            if not changed:
+                break
+
+        return final_orders
 
     def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, weights, opponent_threat=0.0):
 
@@ -536,7 +571,9 @@ class StudentAgent(Agent):
 
         score = distance_score_val
 
-        if is_supportable:
+        # Support only matters when the destination is defended - moving into
+        # empty or friendly territory gains nothing from it
+        if is_supportable and is_contested_flag:
             score += weights['support_bonus']
 
         if is_contested_flag:
@@ -549,11 +586,6 @@ class StudentAgent(Agent):
 
     #This scores every candidate order at one location and returns the best one only for the movement phase
     def score_movement_location(self, loc, all_possible_orders, own_orderable_locations, enemy_centres, weights):
-        '''
-        Scores every candidate order at one location during a Movement phase.
-        Returns a list of up to 3 (score, order) tuples, sorted best-first,
-        so Stage 4 can fall back to the 2nd/3rd choice when collisions occur.
-        '''
         possible_orders = all_possible_orders.get(loc, [])
         if not possible_orders:
             return []
@@ -598,8 +630,15 @@ class StudentAgent(Agent):
 
             scored_candidates.append((total_score, move))
 
+        # Centres only change owner at the end of Fall, so a unit sitting on a
+        # centre we don't own must hold in Fall or it never captures it
+        is_fall = self.game.get_current_phase().startswith('F')
+        on_uncaptured_centre = loc[:3] in enemy_centres
+
         for hold in holds:
             total_score = self.score_order(True, 0, False, False, weights)
+            if is_fall and on_uncaptured_centre:
+                total_score = 100
             scored_candidates.append((total_score, hold))
 
         if not scored_candidates:
@@ -823,11 +862,6 @@ class StudentAgent(Agent):
     #-----
 
     def get_game_stage(self):
-        '''
-        Classifies the current game into EARLY/MID/LATE based on year,
-        used to select different scoring weights per stage rather than
-        applying one fixed weight set across the whole ~20-year game.
-        '''
         current_phase = self.game.get_current_phase()
         year = int(current_phase[1:5])
 
@@ -908,16 +942,17 @@ class StudentAgent(Agent):
         return reachable
 
     def find_supportable_attacks(self, orderable_locations, all_possible_orders):
-        '''
-        Finds every possible (attacker, supporter, move) pairing where one of
-        our units has a legal move into a contested destination, and a
-        different one of our units has a legal support order for that exact
-        move. Returns a list of (attacker_loc, supporter_loc, move_order,
-        support_order) tuples - candidate deliberate supported attacks.
-        '''
         candidates = []
 
+        enemy_centres = set(self.get_enemy_centres())
+        is_fall = self.game.get_current_phase().startswith('F')
+
         for attacker_loc in orderable_locations:
+            # A unit on an uncaptured centre in Fall must stay to capture it.
+            # It can still act as a supporter, since supporting doesn't move it.
+            if is_fall and attacker_loc[:3] in enemy_centres:
+                continue
+
             possible_orders = all_possible_orders.get(attacker_loc, [])
             moves, _, _ = self.classify_orders(possible_orders)
 
@@ -949,18 +984,6 @@ class StudentAgent(Agent):
         return candidates
 
     def select_committed_attacks(self, candidates):
-        '''
-        Selects a set of attack+support pairings where no unit is used more
-        than once. Candidates are ranked by value before selection, so the
-        most useful attacks claim units first regardless of the order the
-        engine returned them in:
-          0 - attacks on our System 2 strategic target
-          1 - attacks on any other enemy supply centre
-          2 - attacks on non-centre provinces (lowest value)
-        Ties are broken alphabetically for determinism.
-        Returns a dict: {loc: order} for every unit locked into a
-        deliberate attack or support this turn.
-        '''
         enemy_centres = set(self.get_enemy_centres())
 
         def priority(candidate):
@@ -1082,6 +1105,7 @@ class StudentAgent(Agent):
 
         final_orders_dict = self.resolve_collisions(top3_by_location, all_possible_orders)
         final_orders_dict.update(locked_orders)
+        final_orders_dict = self.remove_self_blocks(final_orders_dict, top3_by_location)
 
         power_orders = list(final_orders_dict.values())
         return power_orders
