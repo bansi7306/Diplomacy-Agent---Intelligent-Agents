@@ -532,6 +532,24 @@ class StudentAgent(Agent):
             staying = {loc[:3] for loc, o in final_orders.items() if not self.is_move_order(o)}
             moving = {loc[:3]: dest_of(o) for loc, o in final_orders.items() if self.is_move_order(o)}
 
+            def move_priority(l):
+                order_l = final_orders[l]
+                is_supported = any(' S ' in o and o.endswith(order_l) for o in final_orders.values())
+                cands = top3_by_location.get(l)
+                score = next((s for s, o in cands if o == order_l), 1000) if cands else 1000
+                return (is_supported, score, l)
+
+            movers_by_dest = {}
+            for l, o in final_orders.items():
+                d = dest_of(o)
+                if d is not None:
+                    movers_by_dest.setdefault(d, []).append(l)
+            duplicate_losers = set()
+            for d, locs_here in movers_by_dest.items():
+                if len(locs_here) > 1:
+                    keep = max(locs_here, key=move_priority)
+                    duplicate_losers.update(l for l in locs_here if l != keep)
+
             for loc, order in list(final_orders.items()):
                 dest = dest_of(order)
                 if dest is None:
@@ -539,8 +557,9 @@ class StudentAgent(Agent):
 
                 into_staying_unit = dest in staying
                 swap = moving.get(dest) == loc[:3] and loc[:3] > dest  # block only one side of a swap
+                duplicate = loc in duplicate_losers
 
-                if not (into_staying_unit or swap):
+                if not (into_staying_unit or swap or duplicate):
                     continue
 
                 # try the next candidate for this unit, otherwise hold
