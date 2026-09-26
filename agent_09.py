@@ -573,7 +573,8 @@ class StudentAgent(Agent):
 
         # Support only matters when the destination is defended - moving into
         # empty or friendly territory gains nothing from it
-        if is_supportable and is_contested_flag:
+        # when the switch is off, fall back to the old behaviour: bonus for any supportable move
+        if is_supportable and (is_contested_flag or not self.TECHNIQUES['contested_support_only']):
             score += weights['support_bonus']
 
         if is_contested_flag:
@@ -612,7 +613,7 @@ class StudentAgent(Agent):
             contested = self.is_contested(destination)
 
             # Get opponent threat associated with this destination
-            opponent_threat = self.get_destination_threat(destination, weights)
+            opponent_threat = self.get_destination_threat(destination, weights) if self.TECHNIQUES['opponent_modelling'] else 0.0
 
             total_score = self.score_order(
                 False,
@@ -624,7 +625,7 @@ class StudentAgent(Agent):
             )
 
             # Stage 5 implementation of the shallow lookahead
-            if not contested and not supportable:
+            if self.TECHNIQUES['lookahead'] and not contested and not supportable:
                 if self.could_enemy_contest(destination, all_possible_orders):
                     total_score -= weights['lookahead_penalty']
 
@@ -637,7 +638,7 @@ class StudentAgent(Agent):
 
         for hold in holds:
             total_score = self.score_order(True, 0, False, False, weights)
-            if is_fall and on_uncaptured_centre:
+            if self.TECHNIQUES['fall_capture_hold'] and is_fall and on_uncaptured_centre:
                 total_score = 100
             scored_candidates.append((total_score, hold))
 
@@ -872,6 +873,17 @@ class StudentAgent(Agent):
         else:
             return 'LATE'
 
+    TECHNIQUES = {
+        'supported_attacks': True,
+        'collision_resolution': True,
+        'lookahead': True,
+        'strategic_target': True,
+        'fall_capture_hold': True,
+        'contested_support_only': True,
+        'self_block_removal': True,
+        'opponent_modelling': True,
+    }
+    
     STAGE_WEIGHTS = {
         'EARLY': {
             'distance_cap': 5,
@@ -950,7 +962,7 @@ class StudentAgent(Agent):
         for attacker_loc in orderable_locations:
             # A unit on an uncaptured centre in Fall must stay to capture it.
             # It can still act as a supporter, since supporting doesn't move it.
-            if is_fall and attacker_loc[:3] in enemy_centres:
+            if self.TECHNIQUES['fall_capture_hold'] and is_fall and attacker_loc[:3] in enemy_centres:
                 continue
 
             possible_orders = all_possible_orders.get(attacker_loc, [])
@@ -1085,15 +1097,19 @@ class StudentAgent(Agent):
             return power_orders
  
         enemy_centres = self.get_enemy_centres()
-        self.update_strategic_target(enemy_centres, weights)
+        if self.TECHNIQUES['strategic_target']:
+            self.update_strategic_target(enemy_centres, weights)
 
         # Deliberate supported-attack pre-pass:
 
         # Deliberate supported-attack pre-pass: lock in units that can
         # guarantee-win a contested centre via a planned attack+support pair,
         # before normal per-unit scoring runs.
-        attack_candidates = self.find_supportable_attacks(orderable_locations, all_possible_orders)
-        locked_orders = self.select_committed_attacks(attack_candidates)
+        if self.TECHNIQUES['supported_attacks']:
+            attack_candidates = self.find_supportable_attacks(orderable_locations, all_possible_orders)
+            locked_orders = self.select_committed_attacks(attack_candidates)
+        else:
+            locked_orders = {}
 
         remaining_locations = [loc for loc in orderable_locations if loc not in locked_orders]
 
@@ -1103,9 +1119,14 @@ class StudentAgent(Agent):
                 loc, all_possible_orders, orderable_locations, enemy_centres, weights
             )
 
-        final_orders_dict = self.resolve_collisions(top3_by_location, all_possible_orders)
+        if self.TECHNIQUES['collision_resolution']:
+            final_orders_dict = self.resolve_collisions(top3_by_location, all_possible_orders)
+        else:
+            # every unit just takes its own top-scored order
+            final_orders_dict = {loc: cands[0][1] for loc, cands in top3_by_location.items() if cands}
         final_orders_dict.update(locked_orders)
-        final_orders_dict = self.remove_self_blocks(final_orders_dict, top3_by_location)
+        if self.TECHNIQUES['self_block_removal']:
+            final_orders_dict = self.remove_self_blocks(final_orders_dict, top3_by_location)
 
         power_orders = list(final_orders_dict.values())
         return power_orders
