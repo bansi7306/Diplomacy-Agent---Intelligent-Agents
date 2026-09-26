@@ -479,6 +479,22 @@ class StudentAgent(Agent):
         dash_index = words.index('-')
         return words[dash_index + 1]
 
+    def is_support_position(self, graph, destination, enemy_centres):
+        if destination not in graph:
+            return False
+        occupied = {loc[:3] for loc in self.enemy_occupied}
+        for neighbour in graph.neighbors(destination):
+            n = neighbour[:3]
+            if n in enemy_centres and n in occupied:
+                return True
+        return False
+
+    def nearest_centre_distance(self, graph, node, centres):
+        all_lengths = self.army_distances if graph is self.map_graph_army else self.navy_distances
+        lengths = all_lengths.get(node, {})
+        dists = [lengths[c] for c in centres if c in lengths]
+        return min(dists) if dists else None
+
     #This fucntion scores a destination by how close it is to the nearest enemy center by using the map graph to find the shortest path
     def distance_score(self, graph, destination, enemy_centres, weights):
         if destination not in graph:
@@ -621,6 +637,16 @@ class StudentAgent(Agent):
 
             dist_score = self.distance_score(graph, destination, enemy_centres, weights)
 
+            # Progress scoring: reward moves that get closer to an enemy centre,
+            # not moves that are merely close. Stops rear units shuffling sideways.
+            if self.TECHNIQUES['progress_scoring']:
+                cur_d = self.nearest_centre_distance(graph, loc, enemy_centres)
+                new_d = self.nearest_centre_distance(graph, destination, enemy_centres)
+                if cur_d is not None and new_d is not None:
+                    if new_d < cur_d:
+                        dist_score = max(dist_score, 1.5)   # real progress always beats holding (1.0)
+                    elif destination[:3] not in enemy_centres and not self.is_support_position(graph, destination, enemy_centres):
+                        dist_score = 0
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
             # centre" signal
@@ -902,6 +928,7 @@ class StudentAgent(Agent):
         'contested_support_only': True,
         'self_block_removal': True,
         'opponent_modelling': True,
+        'progress_scoring': True,
     }
 
     STAGE_WEIGHTS = {
