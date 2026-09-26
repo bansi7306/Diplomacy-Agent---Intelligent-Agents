@@ -760,8 +760,9 @@ class StudentAgent(Agent):
             return candidates[idx][1]
 
         def get_destination_if_move(order):
-            if ' - ' in order:
-                return self.get_move_destination(order)
+            if self.is_move_order(order):
+                # Strip coast variants so 'BUL/EC' and 'BUL' count as the same province
+                return self.get_move_destination(order)[:3]
             return None
 
         locations = list(top3_by_location.keys())
@@ -883,7 +884,7 @@ class StudentAgent(Agent):
         'self_block_removal': True,
         'opponent_modelling': True,
     }
-    
+
     STAGE_WEIGHTS = {
         'EARLY': {
             'distance_cap': 5,
