@@ -929,6 +929,7 @@ class StudentAgent(Agent):
         'self_block_removal': True,
         'opponent_modelling': True,
         'progress_scoring': True,
+        'support_reconciliation': True,
     }
 
     STAGE_WEIGHTS = {
@@ -1079,6 +1080,55 @@ class StudentAgent(Agent):
             self.game.set_orders(power_name, all_power_orders[power_name])
         self.game.process()
 
+    def reconcile_supports(self, final_orders, top3_by_location, all_possible_orders):
+        order_at = {loc[:3]: order for loc, order in final_orders.items()}
+
+        def dest_of(order):
+            return self.get_move_destination(order)[:3] if self.is_move_order(order) else None
+
+        for loc, order in list(final_orders.items()):
+            parts = order.split()
+            if len(parts) < 5 or parts[2] != 'S':
+                continue
+            supported_unit = f'{parts[3]} {parts[4]}'
+            supported_order = order_at.get(parts[4][:3])
+            if supported_order is None or not supported_order.startswith(supported_unit):
+                continue  # supporting a foreign unit: leave it alone
+
+            supports_move = len(parts) >= 7 and parts[5] == '-'
+            if supports_move and dest_of(supported_order) == parts[6][:3]:
+                continue  # still valid
+            if not supports_move and not self.is_move_order(supported_order):
+                continue  # still valid
+
+            legal = all_possible_orders.get(loc, [])
+            unit = f'{parts[0]} {parts[1]}'
+            replacement = None
+
+            # 1) Support whatever the unit is actually doing now: its new move, or its hold
+            if self.is_move_order(supported_order):
+                candidate = f'{unit} S {supported_order}'
+            else:
+                candidate = f'{unit} S {supported_unit}'
+            if candidate in legal:
+                replacement = candidate
+
+            # 2) Otherwise take this unit's own best move that doesn't clash with our other orders
+            if replacement is None:
+                taken = {dest_of(o) for o in final_orders.values() if dest_of(o)}
+                staying = {l[:3] for l, o in final_orders.items() if not self.is_move_order(o) and l != loc}
+                for _, alt in top3_by_location.get(loc, []):
+                    d = dest_of(alt)
+                    if d is None or (d not in taken and d not in staying):
+                        replacement = alt
+                        break
+
+            # 3) Otherwise hold
+            final_orders[loc] = replacement or f'{unit} H'
+            order_at[loc[:3]] = final_orders[loc]
+
+        return final_orders
+
     #This is called every turn and returns our full list of orders
     @timeout_decorator.timeout(1)
     def get_actions(self):
@@ -1167,6 +1217,9 @@ class StudentAgent(Agent):
         final_orders_dict.update(locked_orders)
         if self.TECHNIQUES['self_block_removal']:
             final_orders_dict = self.remove_self_blocks(final_orders_dict, top3_by_location)
+
+        if self.TECHNIQUES['support_reconciliation']:
+            final_orders_dict = self.reconcile_supports(final_orders_dict, top3_by_location, all_possible_orders)
 
         power_orders = list(final_orders_dict.values())
         return power_orders
