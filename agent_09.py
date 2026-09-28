@@ -437,15 +437,12 @@ class StudentAgent(Agent):
 
     def update_strategic_target(self, enemy_centres, weights):
         if self.current_target is None or self.current_target not in enemy_centres:
-            # target captured, or never set - pick a fresh one
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
             return
 
         self.turns_since_target_progress += 1
-
-        # stuck too long on the same target - abandon and re-pick
-        if self.turns_since_target_progress > 6:
+        if self.turns_since_target_progress > self.TARGET_PATIENCE:
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
 
@@ -919,6 +916,9 @@ class StudentAgent(Agent):
         else:
             return 'LATE'
 
+    # Movement turns without capturing the strategic target before System 2 gives up on it
+    TARGET_PATIENCE = 6
+
     TECHNIQUES = {
         'supported_attacks': True,
         'collision_resolution': True,
@@ -1025,20 +1025,14 @@ class StudentAgent(Agent):
                     if supporter_loc == attacker_loc:
                         continue
 
-                    # Cheap pre-filter: only bother constructing/checking a
-                    # support order if this location is actually adjacent to
-                    # the destination - support requires adjacency, so this
-                    # skips most impossible pairs before doing any string work.
+                    # Use the engine's own support order for this supporter, so the
+                    # supporter's unit type (A/F) is always correct
                     supporter_possible_orders = all_possible_orders.get(supporter_loc, [])
-                    if not any(' S ' in o and move in o for o in supporter_possible_orders):
+                    matching = [o for o in supporter_possible_orders if ' S ' in o and o.endswith(' S ' + move)]
+                    if not matching:
                         continue
-
-                    support_order = self.build_support_order(
-                        move[0], supporter_loc, move
-                    )
-
-                    if self.is_support_legal(support_order, all_possible_orders, supporter_loc):
-                        candidates.append((attacker_loc, supporter_loc, move, support_order))
+                    support_order = matching[0]
+                    candidates.append((attacker_loc, supporter_loc, move, support_order))
 
         return candidates
 
@@ -1085,7 +1079,6 @@ class StudentAgent(Agent):
             self.game.set_orders(power_name, all_power_orders[power_name])
         self.game.process()
 
-    #This is called every turn and returns our full list of orders
     #This is called every turn and returns our full list of orders
     @timeout_decorator.timeout(1)
     def get_actions(self):
