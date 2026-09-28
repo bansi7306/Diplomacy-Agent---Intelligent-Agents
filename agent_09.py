@@ -63,7 +63,6 @@ class StudentAgent(Agent):
         # System 2: persistent strategic target
         self.current_target = None
         self.turns_since_target_progress = 0
-        self.last_target_distance = None
 
     # Updates opponent aggression based on their observed orders
     def update_opponent_aggression(self, all_power_orders):
@@ -297,23 +296,23 @@ class StudentAgent(Agent):
     # Combines aggression, pressure and strength into a threat score
     def get_opponent_threat(self, opponent, weights):
 
-        model = self.opponent_model.get(opponent, {})
+        aggression = self.opponent_model.get(
+            opponent, {}
+        ).get('aggression', 0.0)
 
-        aggression = model.get('aggression', 0.0)
-        relationship = model.get('relationship_score', 0.0)
+        pressure = self.get_opponent_pressure(
+            opponent
+        )
 
+        strength = self.get_opponent_strength(
+            opponent
+        )
 
-        pressure = self.get_opponent_pressure(opponent)
-
-        strength = self.get_opponent_strength(opponent)
-
-        base_threat = (
+        threat = (
             weights['aggression_weight'] * aggression
             + weights['pressure_weight'] * pressure
             + weights['strength_weight'] * strength
         )
-        hostility_factor = (1.0 - relationship) / 2.0
-        threat = base_threat * hostility_factor
 
         return threat
 
@@ -416,74 +415,11 @@ class StudentAgent(Agent):
                 enemy_centres.append(i)
         return enemy_centres
 
-    def get_distance_to_target(self, target):
-        if target is None:
-            return None
-
-        best_distance = float('inf')
-
-        for unit in self.game.get_units(self.power_name):
-            parts = unit.split()
-            unit_type = parts[0]
-            unit_location = parts[1]
-
-            distances = (
-                self.army_distances
-                if unit_type == 'A'
-                else self.navy_distances
-            )
-            distance = distances.get(unit_location, {}).get(target)
-
-            if distance is not None:
-                best_distance = min(best_distance, distance)
-
-        if best_distance == float('inf'):
-            return None
-
-        return best_distance
-
     def choose_strategic_target(self, enemy_centres, weights):
         best_target = None
         best_score = -1000
 
-        own_units = self.game.get_units(self.power_name)
-
         for centre in enemy_centres:
-            min_distance = float('inf')
-
-            #Find the closest one of our inits that can reach this centre
-            for unit in own_units:
-                parts = unit.split()
-                unit_type = parts[0]
-                unit_location = parts[1]
-
-                if unit_type == 'A':
-                    distances = self.army_distances
-                else:
-                    distances = self.navy_distances
-
-                distance = distances.get(unit_location, {}).get(centre)
-
-                if distance is not None:
-                    min_distance = min(min_distance, distance)
-
-                #None of our current units can reach this centre
-                if min_distance == float('inf'):
-                    continue
-
-                #Closer centres should be preferred
-                reach_score = max(0, weights['distance_cap'] - min_distance)
-
-                #Still take the opponent model into account
-                threat = self.get_destination_threat(centre, weights)
-
-                candidate_score = (reach_score - weights['opponent_multiplier'] * threat)
-                if candidate_score > best_score:
-                    best_score = candidate_score
-                    best_target = centre
-            return best_target
-            '''
-
             graph = self.map_graph_army if centre in self.map_graph_army else self.map_graph_navy
             if centre not in graph:
                 continue
@@ -497,35 +433,18 @@ class StudentAgent(Agent):
                 best_score = candidate_score
                 best_target = centre
 
-        return best_target'''
+        return best_target
 
     def update_strategic_target(self, enemy_centres, weights):
         if self.current_target is None or self.current_target not in enemy_centres:
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
-            self.last_target_distance = self.get_distance_to_target(self.current_target)
-
             return
 
-        current_distance = self.get_distance_to_target(self.current_target)
-
-        # Progress-aware patience: reset the counter whenever our closest unit gets nearer the target
-        if (
-            current_distance is not None
-            and self.last_target_distance is not None
-            and current_distance < self.last_target_distance
-        ):
-            self.turns_since_target_progress = 0
-        else:
-            self.turns_since_target_progress += 1
-
-        self.last_target_distance = current_distance
-
-        # Stuck too long on the same target - abandon and re-pick
+        self.turns_since_target_progress += 1
         if self.turns_since_target_progress > self.TARGET_PATIENCE:
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
-            self.last_target_distance = self.get_distance_to_target(self.current_target)
 
     #This bundles our own units and orderable locations into one dict for easy lookup
     def get_own_units_and_locations(self):
@@ -677,7 +596,7 @@ class StudentAgent(Agent):
 
         return final_orders
 
-    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, weights, opponent_threat=0.0, is_enemy_centre=False):
+    def score_order(self, is_hold, distance_score_val, is_supportable, is_contested_flag, weights, opponent_threat=0.0):
 
         if is_hold:
             return weights['hold_baseline']
@@ -694,12 +613,8 @@ class StudentAgent(Agent):
             score -= weights['contest_penalty']
 
         # Opponent modelling contribution
-        threat_penalty = weights['opponent_multiplier'] * opponent_threat
+        score -= weights['opponent_multiplier'] * opponent_threat
 
-        if is_enemy_centre:
-            threat_penalty *= 0.25
-        score -= threat_penalty
-        
         return score
 
     #This scores every candidate order at one location and returns the best one only for the movement phase
@@ -732,23 +647,8 @@ class StudentAgent(Agent):
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
             # centre" signal
-            #if self.current_target and destination == self.current_target:
-             #   dist_score += 3
-
-            if self.current_target:
-                distances = (
-                    self.army_distances
-                    if unit_type == 'A'
-                    else self.navy_distances
-                )
-                current_distance = distances.get(loc, {}).get(self.current_target)
-                new_distance = distances.get(destination, {}).get(self.current_target)
-
-                if current_distance is not None and new_distance is not None:
-                    progress = current_distance - new_distance
-
-                    if progress > 0:
-                        dist_score += 3 * progress
+            if self.current_target and destination == self.current_target:
+                dist_score += 3
 
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
 
@@ -763,8 +663,7 @@ class StudentAgent(Agent):
                 supportable,
                 contested,
                 weights,
-                opponent_threat,
-                is_enemy_centre=destination in enemy_centres
+                opponent_threat
             )
 
             # Stage 5 implementation of the shallow lookahead
@@ -1039,10 +938,10 @@ class StudentAgent(Agent):
             'contest_penalty': 3,
             'hold_baseline': 1.0,
             'lookahead_penalty': 2,
-            'aggression_weight': 0.5,
-            'pressure_weight': 0.2,
-            'strength_weight': 0.3,
-            'opponent_multiplier': 0.5,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
         },
         'MID': {
             'distance_cap': 5,
@@ -1050,10 +949,10 @@ class StudentAgent(Agent):
             'contest_penalty': 3,
             'hold_baseline': 1.0,
             'lookahead_penalty': 2,
-            'aggression_weight': 0.5,
-            'pressure_weight': 0.2,
-            'strength_weight': 0.3,
-            'opponent_multiplier': 0.5,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
         },
         'LATE': {
             'distance_cap': 5,
@@ -1061,10 +960,10 @@ class StudentAgent(Agent):
             'contest_penalty': 3,
             'hold_baseline': 1.0,
             'lookahead_penalty': 2,
-            'aggression_weight': 0.5,
-            'pressure_weight': 0.2,
-            'strength_weight': 0.3,
-            'opponent_multiplier': 0.5,
+            'aggression_weight': 0.4,
+            'pressure_weight': 0.4,
+            'strength_weight': 0.2,
+            'opponent_multiplier': 0.0,
         },
     }
 
