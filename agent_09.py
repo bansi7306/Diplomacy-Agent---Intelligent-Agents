@@ -36,6 +36,7 @@ class StudentAgent(Agent):
         '''Implement your agent here.
         Opponent Model'''
         self.opponent_model = {}
+        self.use_adaptive_opponent_model = True
 
 
     @timeout_decorator.timeout(1)
@@ -57,13 +58,148 @@ class StudentAgent(Agent):
             if opponent != self.power_name:
                 self.opponent_model[opponent] = {
                     'aggression': 0.0,
-                    'relationship_score': 0.0
+                    'relationship_score': 0.0,
+
+                    'activity': 0.0,
+                    'activity_history': [],
+                    'hostility': 0.0
                 }
 
         # System 2: persistent strategic target
         self.current_target = None
         self.turns_since_target_progress = 0
 
+    def update_opponent_activity(self, all_power_orders, unit_counts):
+
+        for power_name, data in self.opponent_model.items():
+            orders = all_power_orders.get(power_name, [])
+            total_units = unit_counts.get(power_name, 0)
+
+            if total_units == 0:
+                turn_activity = 0.0
+
+            else:
+                move_orders = 0
+                
+                for order in orders:
+                    parts = order.split()
+
+                    if len(parts) >= 4 and parts[2] == "-":
+                        move_orders += 1
+
+                turn_activity = move_orders / total_units
+
+            data["activity_history"].append(turn_activity)
+
+            data["activity_history"] = data["activity_history"][-4:]
+            data["activity"] = (
+                sum(data["activity_history"])
+                / len(data["activity_history"])
+            )
+
+    def is_location_near_us(self, location):
+
+        location = location[:3]
+
+        our_units = self.game.get_units(self.power_name)
+        for unit in our_units:
+            unit_location = unit.split()[1][:3]
+
+            if location == unit_location:
+                return True
+
+            adjacent_locations = self.game.map.abut_list(unit_location)
+
+            if location in [loc[:3] for loc in adjacent_locations]:
+                return True
+
+        return False
+
+    def is_our_location(self, location):
+
+        location = location[:3]
+
+        our_units = self.game.get_units(self.power_name)
+
+        for unit in our_units:
+            unit_location = unit.split()[1][:3]
+
+            if location == unit_location:
+                return True
+
+        our_centres = self.game.get_centers(self.power_name)
+
+        for centre in our_centres:
+            if location == centre[:3]:
+                return True
+        return False
+
+    def update_opponent_hostility(self, all_power_orders, lost_centres, our_centres_before, our_units_before):
+
+        our_locations_before = our_centres_before | our_units_before
+        nearby_locations_before = set()
+
+        for location in our_locations_before:
+            adjacent_locations = self.game.map.abut_list(location)
+
+            for adjacent in adjacent_locations:
+                nearby_locations_before.add(adjacent[:3])
+
+        for power_name, data in self.opponent_model.items():
+            hostile_actions = 0.0
+            orders = all_power_orders.get(power_name, [])
+
+            for order in orders:
+                parts = order.split()
+
+                if len(parts) >= 4 and parts[2] == "-":
+                    destination = parts[3][:3]
+
+                    if destination in our_locations_before:
+                        hostile_actions += 1.0
+
+                    elif destination in nearby_locations_before:
+                        hostile_actions += 0.25
+                    
+
+                elif len(parts) >= 5 and parts[2] == "S":
+                    if "-" in parts:
+                        destination = parts[-1][:3]
+
+                        if destination in our_locations_before:
+                            hostile_actions += 1.0
+
+                        elif destination in nearby_locations_before:
+                            hostile_actions += 0.25
+
+            for centre in lost_centres:
+
+                for unit in self.game.get_units(power_name):
+                    unit_location = unit.split()[1][:3]
+
+                    if unit_location == centre:
+                        hostile_actions += 1.0
+                        break
+
+            old_hostility = data["hostility"]
+
+            data["hostility"] = (
+                0.7 * old_hostility
+                + hostile_actions
+            )
+
+    def get_adaptive_opponent_threat(self, power_name):
+        data = self.opponent_model.get(power_name)
+
+        if data is None:
+            return 0.0
+
+        activity = data["activity"]
+        hostility = data["hostility"]
+
+        base_threat = 1.0
+        return activity * (base_threat + hostility)            
+    
     # Updates opponent aggression based on their observed orders
     def update_opponent_aggression(self, all_power_orders):
 
@@ -296,6 +432,9 @@ class StudentAgent(Agent):
     # Combines aggression, pressure and strength into a threat score
     def get_opponent_threat(self, opponent, weights):
 
+        if self.use_adaptive_opponent_model:
+            return self.get_adaptive_opponent_threat(opponent)
+
         aggression = self.opponent_model.get(
             opponent, {}
         ).get('aggression', 0.0)
@@ -332,6 +471,58 @@ class StudentAgent(Agent):
                     return opponent
 
         return None
+
+    def get_centre_owner(self, location):
+        location = location[:3]
+
+        for power_name in self.game.powers:
+            centres = self.game.get_centers(power_name)
+
+            for centre in centres:
+                if centre[:3] == location:
+                    return power_name
+        return None
+
+    def is_truce_power(self, power_name):
+        if power_name == self.power_name:
+            return False
+        data = self.opponent_model.get(power_name)
+
+        if data is None:
+            return False
+
+        try:
+            year = int(self.game.get_current_phase()[:4])
+
+            if year > 1912:
+                return False
+        except (ValueError, TypeError):
+            pass
+
+        return (
+            data["hostility"] <= 0.15
+            and data["activity"] > 0.1
+        )
+
+    def get_attackable_centres(self, enemy_centres):
+        if not self.use_adaptive_opponent_model:
+            return enemy_centres
+
+        preferred_centres = []
+        truce_centres = []
+
+        for centre in enemy_centres:
+            owner = self.get_centre_owner(centre)
+
+            if owner is not None and self.is_truce_power(owner):
+                truce_centres.append(centre)
+            else:
+                preferred_centres.append(centre)
+
+        if preferred_centres:
+            return preferred_centres
+
+        return truce_centres
 
     # Calculates the highest opponent threat around a destination
     def get_destination_threat(self, destination, weights):
@@ -416,10 +607,14 @@ class StudentAgent(Agent):
         return enemy_centres
 
     def choose_strategic_target(self, enemy_centres, weights):
+        candidate_targets = self.get_attackable_centres(enemy_centres)
+                
+        
+        
         best_target = None
         best_score = -1000
 
-        for centre in enemy_centres:
+        for centre in candidate_targets:
             graph = self.map_graph_army if centre in self.map_graph_army else self.map_graph_navy
             if centre not in graph:
                 continue
@@ -436,12 +631,42 @@ class StudentAgent(Agent):
         return best_target
 
     def update_strategic_target(self, enemy_centres, weights):
-        if self.current_target is None or self.current_target not in enemy_centres:
-            self.current_target = self.choose_strategic_target(enemy_centres, weights)
+
+        should_choose_new_target = (
+            self.current_target is None
+            or self.current_target not in enemy_centres
+        )
+
+        if (
+            self.use_adaptive_opponent_model
+            and self.current_target is not None
+        ):
+            target_owner = self.get_centre_owner(self.current_target)
+
+            if (
+                target_owner is not None
+                and self.is_truce_power(target_owner)
+            ):
+                other_targets_exist = False
+
+                for centre in enemy_centres:
+                    owner = self.get_centre_owner(centre)
+                    if owner is None or not self.is_truce_power(owner):
+                        other_targets_exist = True
+                        break
+                if other_targets_exist:
+                    should_choose_new_target = True
+
+        if should_choose_new_target:
+            self.current_target = self.choose_strategic_target(
+                enemy_centres,
+                weights
+            )
             self.turns_since_target_progress = 0
             return
-
+        
         self.turns_since_target_progress += 1
+
         if self.turns_since_target_progress > self.TARGET_PATIENCE:
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
@@ -626,23 +851,24 @@ class StudentAgent(Agent):
         moves, holds, supports = self.classify_orders(possible_orders)
 
         scored_candidates = []
+        attackable_centres = self.get_attackable_centres(enemy_centres)
 
         for move in moves:
             unit_type = move[0]
             graph = self.map_graph_army if unit_type == 'A' else self.map_graph_navy
             destination = self.get_move_destination(move)
 
-            dist_score = self.distance_score(graph, destination, enemy_centres, weights)
+            dist_score = self.distance_score(graph, destination, attackable_centres, weights)
 
             # Progress scoring: reward moves that get closer to an enemy centre,
             # not moves that are merely close. Stops rear units shuffling sideways.
             if self.TECHNIQUES['progress_scoring']:
-                cur_d = self.nearest_centre_distance(graph, loc, enemy_centres)
-                new_d = self.nearest_centre_distance(graph, destination, enemy_centres)
+                cur_d = self.nearest_centre_distance(graph, loc, attackable_centres)
+                new_d = self.nearest_centre_distance(graph, destination, attackable_centres)
                 if cur_d is not None and new_d is not None:
                     if new_d < cur_d:
                         dist_score = max(dist_score, 1.5)   # real progress always beats holding (1.0)
-                    elif destination[:3] not in enemy_centres and not self.is_support_position(graph, destination, enemy_centres):
+                    elif destination[:3] not in attackable_centres and not self.is_support_position(graph, destination, attackable_centres):
                         dist_score = 0
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
@@ -1039,14 +1265,19 @@ class StudentAgent(Agent):
 
     def select_committed_attacks(self, candidates):
         enemy_centres = set(self.get_enemy_centres())
+        attackable_centres = set(
+            self.get_attackable_centres(enemy_centres)
+        )
 
         def priority(candidate):
             attacker_loc, supporter_loc, move, support_order = candidate
             destination = self.get_move_destination(move)
             if self.current_target and destination == self.current_target:
                 rank = 0
-            elif destination in enemy_centres:
+            elif destination in attackable_centres:
                 rank = 1
+            elif destination in enemy_centres:
+                rank = 3
             else:
                 rank = 2
             return (rank, attacker_loc, supporter_loc, move)
@@ -1070,6 +1301,30 @@ class StudentAgent(Agent):
     @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
 
+        was_movement_phase = self.game.get_current_phase().endswith("M")
+
+        our_centres_before = set()
+        our_units_before = set()
+        if was_movement_phase:
+            our_centres_before = set(
+                centre[:3] for centre in self.game.get_centers(self.power_name)
+            )
+
+        
+        
+            our_centres_before = set(
+                unit.split()[1][:3]
+                for unit in self.game.get_units(self.power_name)
+            )
+
+        unit_counts = {}
+
+        if was_movement_phase:
+            for power_name in self.opponent_model:
+                unit_counts[power_name] = len(
+                    self.game.get_units(power_name)
+                )
+
         # Observe opponents before the game state changes
         if self.game.phase_type == 'M':
             self.update_opponent_aggression(all_power_orders)
@@ -1079,6 +1334,30 @@ class StudentAgent(Agent):
         for power_name in all_power_orders.keys():
             self.game.set_orders(power_name, all_power_orders[power_name])
         self.game.process()
+
+        
+
+        if was_movement_phase:
+            
+
+            our_centres_after = set(
+                centre[:3] for centre in self.game.get_centers(self.power_name)
+            )
+            lost_centres = our_centres_before - our_centres_after
+
+            self.update_opponent_hostility(
+                all_power_orders,
+                lost_centres,
+                our_centres_before,
+                our_units_before
+            )
+            
+
+            self.update_opponent_activity(
+                all_power_orders,
+                unit_counts
+            )
+            
 
     def reconcile_supports(self, final_orders, top3_by_location, all_possible_orders):
         order_at = {loc[:3]: order for loc, order in final_orders.items()}
