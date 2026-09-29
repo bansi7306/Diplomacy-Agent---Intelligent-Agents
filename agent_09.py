@@ -1,5 +1,5 @@
 import time
-#import timeout_decorator
+import timeout_decorator
 import random
 import networkx as nx
 from agent_baselines import Agent
@@ -27,7 +27,7 @@ class StudentAgent(Agent):
     ARMY_GRAPH_DIAMETER = 10  # computed offline on the standard map's largest connected army component
     NAVY_GRAPH_DIAMETER = 13  # computed offline on the standard map's largest connected navy component
 
-    #@timeout_decorator.timeout(1)
+    @timeout_decorator.timeout(1)
     def __init__(self, agent_name='Group09Agent'):
         super().__init__(agent_name)
         self.map_graph_army = None
@@ -39,7 +39,7 @@ class StudentAgent(Agent):
         self.use_adaptive_opponent_model = True
 
 
-    #@timeout_decorator.timeout(1)
+    @timeout_decorator.timeout(1)
     def new_game(self, game, power_name):
         self.game = game
         self.power_name = power_name
@@ -1306,7 +1306,7 @@ class StudentAgent(Agent):
 
         return locked_orders
 
-    #@timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
+    @timeout_decorator.timeout(1) # This is only for updating the game engine and other states if any. Do not implement heavy stratergy here.
     def update_game(self, all_power_orders):
 
         was_movement_phase = self.game.get_current_phase().endswith("M")
@@ -1417,7 +1417,7 @@ class StudentAgent(Agent):
         return final_orders
 
     #This is called every turn and returns our full list of orders
-    #@timeout_decorator.timeout(1)
+    @timeout_decorator.timeout(1)
     def get_actions(self):
 
         '''Implement your agent here.'''
