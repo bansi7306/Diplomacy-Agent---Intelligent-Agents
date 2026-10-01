@@ -67,6 +67,7 @@ class StudentAgent(Agent):
         # System 2: persistent strategic target
         self.current_target = None
         self.turns_since_target_progress = 0
+        self.last_target_distance = None
 
     def update_opponent_activity(self, all_power_orders, unit_counts):
 
@@ -576,70 +577,81 @@ class StudentAgent(Agent):
                 enemy_centres.append(i)
         return enemy_centres
 
-    def choose_strategic_target(self, enemy_centres, weights):
-        candidate_targets = self.get_attackable_centres(enemy_centres)
-                
-        
-        
+    # Distance from our closest unit to a centre (None if no unit can reach it)
+    def distance_to_target(self, target):
+        if target is None:
+            return None
+        best = None
+        for unit in self.game.get_units(self.power_name):
+            parts = unit.replace('*', '').split()
+            distances = self.army_distances if parts[0] == 'A' else self.navy_distances
+            d = distances.get(parts[1], {}).get(target)
+            if d is not None and (best is None or d < best):
+                best = d
+        return best
+
+    # System 2: pick the enemy centre our units can reach soonest, preferring undefended
+    # ones, skipping truce partners while other targets exist (opponent modelling)
+    def choose_strategic_target(self, enemy_centres, weights, exclude=None):
+        candidates = [c for c in self.get_attackable_centres(enemy_centres) if c != exclude]
+        if not candidates:
+            candidates = self.get_attackable_centres(enemy_centres)
+        occupied = {l[:3] for l in self.enemy_occupied}
+
         best_target = None
         best_score = -1000
-
-        for centre in candidate_targets:
-            graph = self.map_graph_army if centre in self.map_graph_army else self.map_graph_navy
-            if centre not in graph:
+        for centre in candidates:
+            d = self.distance_to_target(centre)
+            if d is None:
                 continue
-
-            reach_score = self.distance_score(graph, centre, [centre], weights)
-            threat = self.get_destination_threat(centre, weights)
-
-            candidate_score = reach_score - (weights['opponent_multiplier'] * threat)
-
-            if candidate_score > best_score:
-                best_score = candidate_score
+            score = max(0, weights['distance_cap'] - d)
+            # An empty enemy centre falls to a single move; an occupied one needs a supported attack
+            if self.S2_PREFER_EMPTY and centre not in occupied:
+                score += 2
+            score -= weights['opponent_multiplier'] * self.get_destination_threat(centre, weights)
+            if score > best_score:
+                best_score = score
                 best_target = centre
-
         return best_target
 
     def update_strategic_target(self, enemy_centres, weights):
-
         should_choose_new_target = (
             self.current_target is None
             or self.current_target not in enemy_centres
         )
 
-        if (
-            self.TECHNIQUES['opponent_modelling']
-            and self.current_target is not None
-        ):
+        # Opponent modelling: drop a target owned by a truce partner while other targets exist
+        if self.TECHNIQUES['opponent_modelling'] and self.current_target is not None:
             target_owner = self.get_centre_owner(self.current_target)
-
-            if (
-                target_owner is not None
-                and self.is_truce_power(target_owner)
-            ):
-                other_targets_exist = False
-
+            if target_owner is not None and self.is_truce_power(target_owner):
                 for centre in enemy_centres:
                     owner = self.get_centre_owner(centre)
                     if owner is None or not self.is_truce_power(owner):
-                        other_targets_exist = True
+                        should_choose_new_target = True
                         break
-                if other_targets_exist:
-                    should_choose_new_target = True
 
         if should_choose_new_target:
-            self.current_target = self.choose_strategic_target(
-                enemy_centres,
-                weights
-            )
-            self.turns_since_target_progress = 0
-            return
-        
-        self.turns_since_target_progress += 1
-
-        if self.turns_since_target_progress > self.TARGET_PATIENCE:
             self.current_target = self.choose_strategic_target(enemy_centres, weights)
             self.turns_since_target_progress = 0
+            self.last_target_distance = self.distance_to_target(self.current_target)
+            return
+
+        # Patience: count every turn, or only turns where we got no closer
+        if self.S2_PROGRESS_PATIENCE:
+            d = self.distance_to_target(self.current_target)
+            if d is not None and self.last_target_distance is not None and d < self.last_target_distance:
+                self.turns_since_target_progress = 0
+            else:
+                self.turns_since_target_progress += 1
+            self.last_target_distance = d
+        else:
+            self.turns_since_target_progress += 1
+
+        # Stuck too long: switch to the next-best target
+        if self.turns_since_target_progress > self.TARGET_PATIENCE:
+            self.current_target = self.choose_strategic_target(enemy_centres, weights, exclude=self.current_target)
+            self.turns_since_target_progress = 0
+            self.last_target_distance = self.distance_to_target(self.current_target)
 
     #This bundles our own units and orderable locations into one dict for easy lookup
     def get_own_units_and_locations(self):
@@ -843,7 +855,7 @@ class StudentAgent(Agent):
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
             # centre" signal
-            if self.current_target and destination == self.current_target:
+            if self.S2_TARGET_PULL and self.current_target and destination == self.current_target:
                 dist_score += 3
 
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
@@ -1114,6 +1126,10 @@ class StudentAgent(Agent):
 
     # Movement turns without capturing the strategic target before System 2 gives up on it
     TARGET_PATIENCE = 6
+    # System 2 variant flags (for testing which parts help)
+    S2_PREFER_EMPTY = True        # prefer enemy centres with no enemy unit on them
+    S2_PROGRESS_PATIENCE = True   # only count turns where we got no closer to the target
+    S2_TARGET_PULL = True         # +3 score for moving onto the target
 
     TECHNIQUES = {
         'supported_attacks': True,
