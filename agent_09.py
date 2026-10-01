@@ -730,7 +730,7 @@ class StudentAgent(Agent):
     
     #This function checks if an enemy unit is currently occupying the space of our intended move destination
     def is_contested(self, destination):
-        return destination in self.enemy_occupied
+        return destination in self.enemy_occupied or destination[:3] in self.enemy_occupied
 
     #True only for genuine move orders like 'A PAR - BUR'. Supports and convoys also contain ' - ', so we check the third word instead.
     def is_move_order(self, order):
@@ -1045,10 +1045,15 @@ class StudentAgent(Agent):
             winning_move = current_pick(winner_loc)
             unit_type = order[0]
 
-            support_order = self.build_support_order(unit_type, loc, winning_move)
+            # Take the support straight from the engine's legal orders. Supports for coast
+            # moves are listed without the coast ('... S F CON - BUL'), so accept either form
+            wm = winning_move.split()
+            coastless_move = ' '.join(wm[:3] + [wm[3][:3]]) if len(wm) >= 4 else winning_move
+            matching = [o for o in all_possible_orders.get(loc, [])
+                        if ' S ' in o and (o.endswith(' S ' + winning_move) or o.endswith(' S ' + coastless_move))]
 
-            if self.is_support_legal(support_order, all_possible_orders, loc):
-                final_orders[loc] = support_order
+            if matching:
+                final_orders[loc] = matching[0]
             else:
                 # fall to #2, then #3, then hold
                 next_idx = chosen_index[loc] + 1
@@ -1061,7 +1066,13 @@ class StudentAgent(Agent):
         for loc in locations:
             if loc not in final_orders:
                 order = current_pick(loc)
-                final_orders[loc] = order if order else f'{loc[0]} {loc} H'
+                if order:
+                    final_orders[loc] = order
+                else:
+                    # No scored candidate: hold, using the unit's real type (A/F), not the location's first letter
+                    unit_type = next((u[0] for u in self.game.get_units(self.power_name)
+                                      if u.split()[1] == loc), 'A')
+                    final_orders[loc] = f'{unit_type} {loc} H'
 
         return final_orders
 
@@ -1100,7 +1111,7 @@ class StudentAgent(Agent):
 
     #This function checks if any enemy unit has a legal move into this destination for this turn, it's a one turn look ahead check
     def could_enemy_contest(self, destination, all_possible_orders):
-        return destination in self.enemy_reachable
+        return destination in self.enemy_reachable or destination[:3] in self.enemy_reachable
 
     #This then looks up which power controls a given unit string so that we can judge their friendliness
     def get_unit_owner(self, unit):
@@ -1191,7 +1202,9 @@ class StudentAgent(Agent):
             if power_name == self.power_name:
                 continue
             for unit in self.game.get_units(power_name):
-                occupied.add(unit.split(' ')[1])
+                loc = unit.split(' ')[1]
+                occupied.add(loc)
+                occupied.add(loc[:3])   # also the bare province, so 'BUL/EC' matches 'BUL'
         return occupied
 
     #Builds the set of every destination any enemy unit can move into this turn, computed once per turn so the lookahead check is a fast lookup
@@ -1210,7 +1223,9 @@ class StudentAgent(Agent):
                     continue
                 unit = ' '.join(order.split(' ')[:2])
                 if unit in unit_owner:
-                    reachable.add(self.get_move_destination(order))
+                    dest = self.get_move_destination(order)
+                    reachable.add(dest)
+                    reachable.add(dest[:3])   # bare province too, so coasts match
         return reachable
 
     def find_supportable_attacks(self, orderable_locations, all_possible_orders):
