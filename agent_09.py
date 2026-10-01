@@ -43,10 +43,26 @@ class StudentAgent(Agent):
         self.game = game
         self.power_name = power_name
         self.build_map_graphs()
+        self.stranded_armies = set()   # armies with no useful land move and no convoy available this turn
 
         # The map never changes, so compute every shortest-path distance once per game
         self.army_distances = dict(nx.all_pairs_shortest_path_length(self.map_graph_army))
         self.navy_distances = dict(nx.all_pairs_shortest_path_length(self.map_graph_navy))
+
+        # Convoy geography: separate landmasses (e.g. Britain vs the continent), sea zones that
+        # bridge two landmasses, and the coastal provinces that touch a bridge sea (launch ports)
+        components = [c for c in nx.connected_components(self.map_graph_army) if len(c) > 1]
+        self.army_region = {node: i for i, comp in enumerate(components) for node in comp}
+        self.bridge_seas = set()
+        for sea in self.map_graph_navy.nodes:
+            if self.game.map.area_type(sea) != 'WATER':
+                continue
+            regions = {self.army_region[c] for c in self.map_graph_navy.neighbors(sea) if c in self.army_region}
+            if len(regions) >= 2:
+                self.bridge_seas.add(sea)
+        self.launch_ports = {c for sea in self.bridge_seas
+                             for c in self.map_graph_navy.neighbors(sea) if c in self.army_region}
+        self.armies_to_port = set()   # stranded armies walking to a launch port
 
         '''Implement your agent here.'''
 
@@ -888,6 +904,20 @@ class StudentAgent(Agent):
                         dist_score = max(dist_score, 1.5)   # real progress always beats holding (1.0)
                     elif destination[:3] not in attackable_centres and not self.is_support_position(graph, destination, attackable_centres):
                         dist_score = 0
+            # Convoy positioning: a fleet moving into a bridge sea next to a stranded army
+            # makes a convoy across to another landmass possible next turn
+            if (self.TECHNIQUES['convoys'] and unit_type == 'F' and destination in self.bridge_seas
+                    and any(self.navy_distances.get(destination, {}).get(a) == 1 for a in self.stranded_armies)):
+                dist_score = max(dist_score, 2.0)
+
+            # Stranded army walking to a launch port (e.g. LVP -> YOR) so it can be convoyed
+            if self.TECHNIQUES['convoys'] and unit_type == 'A' and loc in self.armies_to_port:
+                lengths_now = self.army_distances.get(loc, {})
+                lengths_new = self.army_distances.get(destination, {})
+                cur_p = min((lengths_now[p] for p in self.launch_ports if p in lengths_now), default=None)
+                new_p = min((lengths_new[p] for p in self.launch_ports if p in lengths_new), default=None)
+                if cur_p is not None and new_p is not None and new_p < cur_p:
+                    dist_score = max(dist_score, 1.5)
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
             # centre" signal
@@ -1194,6 +1224,7 @@ class StudentAgent(Agent):
         'opponent_modelling': True,
         'progress_scoring': True,
         'support_reconciliation': True,
+        'convoys': True,
     }
 
     STAGE_WEIGHTS = {
@@ -1450,6 +1481,88 @@ class StudentAgent(Agent):
 
         return final_orders
 
+        # Convoys: move armies that have no useful land move (e.g. England's island army) by sea.
+    # Single-fleet convoys only: one of our fleets, in a sea zone touching both the army and
+    # the destination, carries it. The army's VIA move and the fleet's convoy order are
+    # locked together so later steps can't break the pair. Armies on a landmass with no enemy
+    # centres walk to a launch port first; stranded armies with no convoy yet are remembered,
+    # so a fleet can move into position (see score_movement_location).
+    def plan_convoys(self, orderable_locations, all_possible_orders, locked_orders, enemy_centres):
+        convoy_orders = {}
+        self.stranded_armies = set()
+        self.armies_to_port = set()
+        used = set(locked_orders)
+        unit_type_at = {u.split()[1]: u[0] for u in self.game.get_units(self.power_name)}
+        own_provinces = {l[:3] for l in orderable_locations}
+        enemy_held = {l[:3] for l in self.enemy_occupied}
+        taken_dests = set()
+        is_fall = self.game.get_current_phase().startswith('F')
+
+        for army_loc in orderable_locations:
+            if army_loc in used or unit_type_at.get(army_loc) != 'A':
+                continue
+            # An army sitting on an uncaptured centre in Fall must stay to capture it
+            if is_fall and army_loc[:3] in enemy_centres:
+                continue
+            orders = all_possible_orders.get(army_loc, [])
+
+            # Only stranded armies: no land move gets closer to an enemy centre
+            cur_d = self.nearest_centre_distance(self.map_graph_army, army_loc, enemy_centres)
+            land_progress = False
+            for o in orders:
+                if self.is_move_order(o) and not o.endswith(' VIA'):
+                    new_d = self.nearest_centre_distance(self.map_graph_army, self.get_move_destination(o), enemy_centres)
+                    if cur_d is not None and new_d is not None and new_d < cur_d:
+                        land_progress = True
+                        break
+            if land_progress:
+                continue
+
+            # On a landmass with no enemy centres left (e.g. Britain): walk to a launch port first
+            if cur_d is None and army_loc not in self.launch_ports:
+                self.armies_to_port.add(army_loc)
+                continue
+
+            best = None   # (score, via_move, fleet_loc, convoy_order, dest)
+            for via in [o for o in orders if o.endswith(' VIA')]:
+                dest = self.get_move_destination(via)[:3]
+                if dest in own_provinces or dest in enemy_held or dest in taken_dests:
+                    continue
+                # Score the landing spot: empty enemy centre first, otherwise closeness to enemy centres
+                if dest in enemy_centres:
+                    score = 10
+                else:
+                    d = self.nearest_centre_distance(self.map_graph_army, dest, enemy_centres)
+                    score = 0 if d is None else max(0, 5 - d)
+                if score <= 0:
+                    continue
+
+                # Find one of our free fleets next to both the army and the destination
+                move_core = via[:-len(' VIA')]
+                for fleet_loc in orderable_locations:
+                    if fleet_loc in used or unit_type_at.get(fleet_loc) != 'F':
+                        continue
+                    navy = self.navy_distances.get(fleet_loc, {})
+                    if navy.get(army_loc) != 1 or navy.get(dest) != 1:
+                        continue
+                    convoy = [o for o in all_possible_orders.get(fleet_loc, [])
+                              if ' C ' in o and o.endswith(' C ' + move_core)]
+                    if convoy and (best is None or score > best[0]):
+                        best = (score, via, fleet_loc, convoy[0], dest)
+                        break
+
+            if best:
+                _, via, fleet_loc, convoy_order, dest = best
+                convoy_orders[army_loc] = via
+                convoy_orders[fleet_loc] = convoy_order
+                used.update([army_loc, fleet_loc])
+                taken_dests.add(dest)
+            else:
+                # Stranded with no convoy available yet: a fleet should move into position
+                self.stranded_armies.add(army_loc)
+
+        return convoy_orders
+
     #This is called every turn and returns our full list of orders
     @timeout_decorator.timeout(1)
     def get_actions(self):
@@ -1521,6 +1634,10 @@ class StudentAgent(Agent):
             locked_orders = self.select_committed_attacks(attack_candidates)
         else:
             locked_orders = {}
+
+        # Convoys: lock stranded armies and their carrying fleet together, before normal scoring
+        if self.TECHNIQUES['convoys']:
+            locked_orders.update(self.plan_convoys(orderable_locations, all_possible_orders, locked_orders, enemy_centres))
 
         remaining_locations = [loc for loc in orderable_locations if loc not in locked_orders]
 
