@@ -66,6 +66,7 @@ class StudentAgent(Agent):
 
         # System 2: persistent strategic target
         self.current_target = None
+        self.current_targets = {}
         self.turns_since_target_progress = 0
         self.last_target_distance = None
 
@@ -590,6 +591,24 @@ class StudentAgent(Agent):
                 best = d
         return best
 
+    # Score a centre as a System 2 target: reachable soon, preferably undefended
+    def target_score(self, centre, weights, occupied):
+        d = self.distance_to_target(centre)
+        if d is None:
+            return None
+        score = max(0, weights['distance_cap'] - d)
+        if self.S2_PREFER_EMPTY and centre not in occupied:
+            score += 2
+        score -= weights['opponent_multiplier'] * self.get_destination_threat(centre, weights)
+        return score
+
+    # Moves between two centres (army route if there is one, else fleet route)
+    def centre_gap(self, a, b):
+        d = self.army_distances.get(a, {}).get(b)
+        if d is None:
+            d = self.navy_distances.get(a, {}).get(b)
+        return d if d is not None else 99
+
     # System 2: pick the enemy centre our units can reach soonest, preferring undefended
     # ones, skipping truce partners while other targets exist (opponent modelling)
     def choose_strategic_target(self, enemy_centres, weights, exclude=None):
@@ -615,43 +634,60 @@ class StudentAgent(Agent):
         return best_target
 
     def update_strategic_target(self, enemy_centres, weights):
-        should_choose_new_target = (
-            self.current_target is None
-            or self.current_target not in enemy_centres
-        )
+        needed = 18 - len(self.game.get_centers(self.power_name))
+        endgame = self.S2_ENDGAME and 0 < needed <= self.ENDGAME_NEEDED
 
-        # Opponent modelling: drop a target owned by a truce partner while other targets exist
-        if self.TECHNIQUES['opponent_modelling'] and self.current_target is not None:
-            target_owner = self.get_centre_owner(self.current_target)
-            if target_owner is not None and self.is_truce_power(target_owner):
-                for centre in enemy_centres:
-                    owner = self.get_centre_owner(centre)
-                    if owner is None or not self.is_truce_power(owner):
-                        should_choose_new_target = True
-                        break
+        # Endgame: every enemy centre is fair game; otherwise skip truce partners (opponent modelling)
+        pool = set(enemy_centres) if endgame else set(self.get_attackable_centres(enemy_centres))
+        occupied = {l[:3] for l in self.enemy_occupied}
 
-        if should_choose_new_target:
-            self.current_target = self.choose_strategic_target(enemy_centres, weights)
-            self.turns_since_target_progress = 0
-            self.last_target_distance = self.distance_to_target(self.current_target)
-            return
+        # 1) Drop targets we captured, or that left the pool (e.g. a truce formed)
+        for t in list(self.current_targets):
+            if t not in pool:
+                del self.current_targets[t]
 
-        # Patience: count every turn, or only turns where we got no closer
-        if self.S2_PROGRESS_PATIENCE:
-            d = self.distance_to_target(self.current_target)
-            if d is not None and self.last_target_distance is not None and d < self.last_target_distance:
-                self.turns_since_target_progress = 0
+        # 2) Progress-aware patience per target; give up on targets we stopped closing in on
+        dropped = set()
+        for t, info in list(self.current_targets.items()):
+            d = self.distance_to_target(t)
+            if self.S2_PROGRESS_PATIENCE and d is not None and info['last_d'] is not None and d < info['last_d']:
+                info['stale'] = 0
             else:
-                self.turns_since_target_progress += 1
-            self.last_target_distance = d
-        else:
-            self.turns_since_target_progress += 1
+                info['stale'] += 1
+            info['last_d'] = d
+            if info['stale'] > self.TARGET_PATIENCE:
+                del self.current_targets[t]
+                dropped.add(t)
 
-        # Stuck too long: switch to the next-best target
-        if self.turns_since_target_progress > self.TARGET_PATIENCE:
-            self.current_target = self.choose_strategic_target(enemy_centres, weights, exclude=self.current_target)
-            self.turns_since_target_progress = 0
-            self.last_target_distance = self.distance_to_target(self.current_target)
+        # 3) How many targets we want
+        if not self.S2_MULTI_TARGET:
+            wanted = 1
+        elif endgame:
+            wanted = needed
+        else:
+            wanted = max(1, min(self.S2_MAX_FRONTS, len(self.game.get_units(self.power_name)) // 3))
+
+        # 4) Fill up with the best remaining centres
+        while len(self.current_targets) < wanted:
+            best, best_score = None, None
+            for c in sorted(pool):
+                if c in self.current_targets or c in dropped:
+                    continue
+                # Outside the endgame, each target must be on a different front
+                if not endgame and any(self.centre_gap(c, t) < self.S2_FRONT_SPACING for t in self.current_targets):
+                    continue
+                s = self.target_score(c, weights, occupied)
+                if s is not None and (best_score is None or s > best_score):
+                    best, best_score = c, s
+            if best is None:
+                break
+            self.current_targets[best] = {'stale': 0, 'last_d': self.distance_to_target(best)}
+
+        # Keep one "main" target for traces and older code that expect a single target
+        def dist_or_far(t):
+            d = self.distance_to_target(t)
+            return 99 if d is None else d
+        self.current_target = min(self.current_targets, key=dist_or_far) if self.current_targets else None
 
     #This bundles our own units and orderable locations into one dict for easy lookup
     def get_own_units_and_locations(self):
@@ -855,7 +891,7 @@ class StudentAgent(Agent):
             # System 2: bonus for progressing toward our committed
             # long-term target, on top of the general "closer to any
             # centre" signal
-            if self.S2_TARGET_PULL and self.current_target and destination == self.current_target:
+            if self.S2_TARGET_PULL and destination[:3] in self.current_targets:
                 dist_score += 3
 
             supportable = self.is_move_supportable(move, all_possible_orders, own_orderable_locations)
@@ -1141,6 +1177,11 @@ class StudentAgent(Agent):
     S2_PREFER_EMPTY = True        # prefer enemy centres with no enemy unit on them
     S2_PROGRESS_PATIENCE = True   # only count turns where we got no closer to the target
     S2_TARGET_PULL = True         # +3 score for moving onto the target
+    S2_MULTI_TARGET = True    # one target per front instead of one for the whole army
+    S2_MAX_FRONTS = 3         # most targets at once outside the endgame
+    S2_FRONT_SPACING = 3      # targets on different fronts must be at least this many moves apart
+    S2_ENDGAME = True         # endgame mode: target the centres that get us to 18 (truces end)
+    ENDGAME_NEEDED = 4        # endgame starts when we need this many centres or fewer to win
 
     TECHNIQUES = {
         'supported_attacks': True,
@@ -1273,7 +1314,7 @@ class StudentAgent(Agent):
         def priority(candidate):
             attacker_loc, supporter_loc, move, support_order = candidate
             destination = self.get_move_destination(move)
-            if self.current_target and destination == self.current_target:
+            if destination[:3] in self.current_targets:
                 rank = 0
             elif destination in attackable_centres:
                 rank = 1
