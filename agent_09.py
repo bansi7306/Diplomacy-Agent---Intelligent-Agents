@@ -36,7 +36,6 @@ class StudentAgent(Agent):
         '''Implement your agent here.
         Opponent Model'''
         self.opponent_model = {}
-        self.use_adaptive_opponent_model = True
 
 
     @timeout_decorator.timeout(1)
@@ -96,43 +95,6 @@ class StudentAgent(Agent):
                 sum(data["activity_history"])
                 / len(data["activity_history"])
             )
-
-    def is_location_near_us(self, location):
-
-        location = location[:3]
-
-        our_units = self.game.get_units(self.power_name)
-        for unit in our_units:
-            unit_location = unit.split()[1][:3]
-
-            if location == unit_location:
-                return True
-
-            adjacent_locations = self.game.map.abut_list(unit_location)
-
-            if location in [loc[:3] for loc in adjacent_locations]:
-                return True
-
-        return False
-
-    def is_our_location(self, location):
-
-        location = location[:3]
-
-        our_units = self.game.get_units(self.power_name)
-
-        for unit in our_units:
-            unit_location = unit.split()[1][:3]
-
-            if location == unit_location:
-                return True
-
-        our_centres = self.game.get_centers(self.power_name)
-
-        for centre in our_centres:
-            if location == centre[:3]:
-                return True
-        return False
 
     def update_opponent_hostility(self, all_power_orders, lost_centres, our_centres_before, our_units_before):
 
@@ -432,7 +394,7 @@ class StudentAgent(Agent):
     # Combines aggression, pressure and strength into a threat score
     def get_opponent_threat(self, opponent, weights):
 
-        if self.use_adaptive_opponent_model:
+        if self.TECHNIQUES['opponent_modelling']:
             return self.get_adaptive_opponent_threat(opponent)
 
         aggression = self.opponent_model.get(
@@ -492,7 +454,7 @@ class StudentAgent(Agent):
             return False
 
         try:
-            year = int(self.game.get_current_phase()[:4])
+            year = int(self.game.get_current_phase()[1:5])
 
             if year > 1912:
                 return False
@@ -500,7 +462,7 @@ class StudentAgent(Agent):
             pass
 
         activity_history = data["activity_history"]
-        if len(activity_history) < 2:
+        if len(activity_history) < 4:
             return False
 
         is_static = (
@@ -513,7 +475,7 @@ class StudentAgent(Agent):
         return data["hostility"] <= 0.15
 
     def get_attackable_centres(self, enemy_centres):
-        if not self.use_adaptive_opponent_model:
+        if not self.TECHNIQUES['opponent_modelling']:
             return enemy_centres
 
         preferred_centres = []
@@ -646,7 +608,7 @@ class StudentAgent(Agent):
         )
 
         if (
-            self.use_adaptive_opponent_model
+            self.TECHNIQUES['opponent_modelling']
             and self.current_target is not None
         ):
             target_owner = self.get_centre_owner(self.current_target)
@@ -1320,7 +1282,7 @@ class StudentAgent(Agent):
 
         
         
-            our_centres_before = set(
+            our_units_before = set(
                 unit.split()[1][:3]
                 for unit in self.game.get_units(self.power_name)
             )
@@ -1510,36 +1472,3 @@ class StudentAgent(Agent):
 
         power_orders = list(final_orders_dict.values())
         return power_orders
-
-        '''
-        Return a list of orders. Each order is a string, with specific format. For the format, read the game rule and game engine documentation.
-        
-        Expected format:
-        A LON H                  # Army at LON holds
-        F IRI - MAO              # Fleet at IRI moves to MAO (and attack)
-        A WAL S F LON            # Army at WAL supports Fleet at LON (and hold)
-        F NTH S A EDI - YOR      # Fleet at NTH supports Army at EDI to move to YOR
-        F NWG C A NWY - EDI      # Fleet at NWG convoys Army at NWY to EDI
-        A NWY - EDI VIA          # Army at NWY moves to EDI via convoy
-        A WAL R LON              # Army at WAL retreats to LON
-        A LON D                  # Disband Army at LON
-        A LON B                  # Build Army at LON
-        F EDI B                  # Build Fleet at EDI
-
-        Note: If an invalid order is sent to the engine, it will be accepted but with a result of 'void' (no effect).
-        Note: For a 'support' action, two orders are needed, one for the supporter and one for the supportee. (Same for 'convoy')
-        Note: For each unit, if no order is given, it will 'hold' by default.
-
-        Useful Functions:
-        
-        # This is a dict of all the possible orders for each unit at each location (for all powers).
-        possible_orders = self.game.get_all_possible_orders()
-
-        # This is a list of all orderable locations for the power you control.
-        orderable_locations = self.game.get_orderable_locations(self.power_name)
-    
-        # Combining these two, you can have the full action space for the power you control.
-
-        # You can re-use the build_map_graphs function in the GreedyAgent to build the connection graph of the map if needed.
-        
-        '''
