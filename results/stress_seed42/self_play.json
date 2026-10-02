@@ -1,0 +1,193 @@
+{
+  "label": "Unofficial stress: self_play",
+  "repeats": 2,
+  "seed": 42,
+  "rows": {
+    "AUSTRIA": {
+      "power": "AUSTRIA",
+      "avg_sc": 0.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 100.0,
+      "games": 2
+    },
+    "ENGLAND": {
+      "power": "ENGLAND",
+      "avg_sc": 1.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 100.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "FRANCE": {
+      "power": "FRANCE",
+      "avg_sc": 11.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 100.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "GERMANY": {
+      "power": "GERMANY",
+      "avg_sc": 0.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 100.0,
+      "games": 2
+    },
+    "ITALY": {
+      "power": "ITALY",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "RUSSIA": {
+      "power": "RUSSIA",
+      "avg_sc": 3.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 100.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "TURKEY": {
+      "power": "TURKEY",
+      "avg_sc": 0.0,
+      "std_sc": 0.0,
+      "win_rate": 0.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 100.0,
+      "games": 2
+    },
+    "ALL": {
+      "power": "ALL",
+      "avg_sc": 4.714285714285714,
+      "std_sc": 6.540298938434055,
+      "win_rate": 14.285714285714286,
+      "survive_rate": 42.857142857142854,
+      "defeat_rate": 42.857142857142854,
+      "games": 14
+    }
+  },
+  "game_records": [
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "AUSTRIA",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "ENGLAND",
+      "score": 1,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "FRANCE",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "GERMANY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "RUSSIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 1,
+      "power": "TURKEY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "AUSTRIA",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "ENGLAND",
+      "score": 1,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "FRANCE",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "GERMANY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "RUSSIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1917
+    },
+    {
+      "label": "Unofficial stress: self_play",
+      "repeat": 2,
+      "power": "TURKEY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1917
+    }
+  ]
+}

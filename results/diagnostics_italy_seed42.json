@@ -1,0 +1,1251 @@
+{
+  "aggregate": {
+    "games": 1,
+    "avg_sc": 18.0,
+    "std_sc": 0.0,
+    "win_rate": 100.0,
+    "survive_rate": 0.0,
+    "defeat_rate": 0.0,
+    "order_counts": {
+      "MOVE": 100,
+      "SUPPORT": 31,
+      "BUILD": 12,
+      "HOLD": 9,
+      "RETREAT": 1
+    },
+    "result_counts": {
+      "SUCCESS": 249,
+      "bounce": 9,
+      "cut": 4,
+      "void": 5,
+      "dislodged": 1,
+      "disband": 1
+    },
+    "method_times": {
+      "new_game": [
+        0.006183102999784751
+      ],
+      "get_actions": [
+        0.0012125709999963874,
+        0.0008800169998721685,
+        0.0001191970004583709,
+        0.0011487289993965533,
+        0.0012465949994293624,
+        0.0001489040005253628,
+        0.0011486690000310773,
+        3.486700006760657e-05,
+        0.00150939700051822,
+        2.2442999579652678e-05,
+        0.00013334399955056142,
+        0.0012115590006942512,
+        2.128100004483713e-05,
+        0.0018814249997376464,
+        2.1521000235225074e-05,
+        0.0015217600002870313,
+        2.0358999790914822e-05,
+        0.001409737000358291,
+        0.0001337749999947846,
+        0.0017302369997196365,
+        0.0016540919996259618,
+        0.0001382529999318649,
+        0.0019811459997072234,
+        0.0019245270004830672,
+        2.1099999685247894e-05,
+        0.00013158000001567416,
+        0.0022910959996806923,
+        1.947700002347119e-05,
+        0.002593230999991647,
+        7.148700024117716e-05,
+        0.00012725200031127315,
+        0.002835172000231978,
+        0.0028127610003139125,
+        1.916699966386659e-05
+      ],
+      "update_game": [
+        0.0016305079998346628,
+        0.0016886180001165485,
+        0.0002641630007929052,
+        0.001931750999574433,
+        0.0019359789994268795,
+        0.00036128800002188655,
+        0.0026841950002562953,
+        0.000499691999721108,
+        0.0019519400002536713,
+        0.00042717399992397986,
+        0.00044903600064571947,
+        0.0020032660004289937,
+        0.00036039699989487417,
+        0.0020645439999498194,
+        0.0002651960003277054,
+        0.0019529609999153763,
+        0.0002877289998650667,
+        0.002012995999393752,
+        0.0005045919997428427,
+        0.00215489600032015,
+        0.0020038080001540948,
+        0.0004039699997520074,
+        0.0021608879997074837,
+        0.0022323039993352722,
+        0.0004357609996077372,
+        0.0005111540003781556,
+        0.0023147209994931472,
+        0.00035011799991480075,
+        0.002492048000021896,
+        0.00047177899978123605,
+        0.0004890720001640148,
+        0.002350779999687802,
+        0.0024356120002266834,
+        0.0004139890006626956
+      ],
+      "__init__": [
+        3.901499985659029e-05
+      ]
+    },
+    "warnings": 0,
+    "errors": 0,
+    "sync_mismatches": 0,
+    "legality_flags": 0,
+    "missing_order_slots": 1,
+    "per_power_avg_sc": {
+      "ITALY": 18.0
+    }
+  },
+  "games": [
+    {
+      "player_power": "ITALY",
+      "final_sc": 18,
+      "outcome": "WIN",
+      "end_year": 1909,
+      "phases": [
+        {
+          "phase_before": "S1901M",
+          "phase_type": "M",
+          "phase_after": "F1901M",
+          "player_private_phase_after": "F1901M",
+          "sc_before": 3,
+          "sc_after": 3,
+          "orderable_locations": 3,
+          "orders_submitted": 3,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP - TYS",
+            "A ROM - APU",
+            "A VEN - ROM"
+          ],
+          "action_time_s": 0.0012125709999963874,
+          "update_time_s": 0.0016305079998346628,
+          "order_status": {
+            "F NAP": [],
+            "A ROM": [],
+            "A VEN": []
+          }
+        },
+        {
+          "phase_before": "F1901M",
+          "phase_type": "M",
+          "phase_after": "W1901A",
+          "player_private_phase_after": "W1901A",
+          "sc_before": 3,
+          "sc_after": 4,
+          "orderable_locations": 3,
+          "orders_submitted": 3,
+          "missing_order_slots": 0,
+          "orders": [
+            "A ROM S A APU - VEN",
+            "A APU - VEN",
+            "F TYS - TUN"
+          ],
+          "action_time_s": 0.0008800169998721685,
+          "update_time_s": 0.0016886180001165485,
+          "order_status": {
+            "F TYS": [],
+            "A APU": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "W1901A",
+          "phase_type": "A",
+          "phase_after": "S1902M",
+          "player_private_phase_after": "S1902M",
+          "sc_before": 4,
+          "sc_after": 4,
+          "orderable_locations": 1,
+          "orders_submitted": 1,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP B"
+          ],
+          "action_time_s": 0.0001191970004583709,
+          "update_time_s": 0.0002641630007929052,
+          "order_status": {
+            "A ROM": [],
+            "F TUN": [],
+            "A VEN": []
+          }
+        },
+        {
+          "phase_before": "S1902M",
+          "phase_type": "M",
+          "phase_after": "F1902M",
+          "player_private_phase_after": "F1902M",
+          "sc_before": 4,
+          "sc_after": 4,
+          "orderable_locations": 4,
+          "orders_submitted": 4,
+          "missing_order_slots": 0,
+          "orders": [
+            "F TUN S F NAP - ION",
+            "F NAP - ION",
+            "A ROM - APU",
+            "A VEN - PIE"
+          ],
+          "action_time_s": 0.0011487289993965533,
+          "update_time_s": 0.001931750999574433,
+          "order_status": {
+            "A ROM": [],
+            "F TUN": [],
+            "A VEN": [],
+            "F NAP": []
+          }
+        },
+        {
+          "phase_before": "F1902M",
+          "phase_type": "M",
+          "phase_after": "W1902A",
+          "player_private_phase_after": "W1902A",
+          "sc_before": 4,
+          "sc_after": 5,
+          "orderable_locations": 4,
+          "orders_submitted": 4,
+          "missing_order_slots": 0,
+          "orders": [
+            "A PIE S A APU - VEN",
+            "A APU - VEN",
+            "F ION - GRE",
+            "F TUN - WES"
+          ],
+          "action_time_s": 0.0012465949994293624,
+          "update_time_s": 0.0019359789994268795,
+          "order_status": {
+            "F TUN": [],
+            "A APU": [],
+            "A PIE": [],
+            "F ION": []
+          }
+        },
+        {
+          "phase_before": "W1902A",
+          "phase_type": "A",
+          "phase_after": "S1903M",
+          "player_private_phase_after": "S1903M",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 2,
+          "orders_submitted": 1,
+          "missing_order_slots": 1,
+          "orders": [
+            "A ROM B"
+          ],
+          "action_time_s": 0.0001489040005253628,
+          "update_time_s": 0.00036128800002188655,
+          "order_status": {
+            "A PIE": [],
+            "F WES": [],
+            "A VEN": [],
+            "F GRE": []
+          }
+        },
+        {
+          "phase_before": "S1903M",
+          "phase_type": "M",
+          "phase_after": "S1903R",
+          "player_private_phase_after": "S1903R",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 5,
+          "orders_submitted": 5,
+          "missing_order_slots": 0,
+          "orders": [
+            "F GRE - AEG",
+            "A ROM - APU",
+            "F WES - LYO",
+            "A PIE - TYR",
+            "A VEN S A PIE - TYR"
+          ],
+          "action_time_s": 0.0011486690000310773,
+          "update_time_s": 0.0026841950002562953,
+          "order_status": {
+            "A PIE": [],
+            "F WES": [],
+            "A VEN": [],
+            "F GRE": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "S1903R",
+          "phase_type": "R",
+          "phase_after": "F1903M",
+          "player_private_phase_after": "F1903M",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 3.486700006760657e-05,
+          "update_time_s": 0.000499691999721108,
+          "order_status": {
+            "A VEN": [],
+            "A TYR": [],
+            "F LYO": [],
+            "F AEG": [],
+            "A APU": []
+          }
+        },
+        {
+          "phase_before": "F1903M",
+          "phase_type": "M",
+          "phase_after": "F1903R",
+          "player_private_phase_after": "F1903R",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 5,
+          "orders_submitted": 5,
+          "missing_order_slots": 0,
+          "orders": [
+            "F AEG - EAS",
+            "A APU - ROM",
+            "F LYO - PIE",
+            "A TYR - TRI",
+            "A VEN S A TYR - TRI"
+          ],
+          "action_time_s": 0.00150939700051822,
+          "update_time_s": 0.0019519400002536713,
+          "order_status": {
+            "A VEN": [],
+            "A TYR": [],
+            "F LYO": [],
+            "F AEG": [],
+            "A APU": []
+          }
+        },
+        {
+          "phase_before": "F1903R",
+          "phase_type": "R",
+          "phase_after": "W1903A",
+          "player_private_phase_after": "W1903A",
+          "sc_before": 5,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.2442999579652678e-05,
+          "update_time_s": 0.00042717399992397986,
+          "order_status": {
+            "A VEN": [],
+            "A TRI": [],
+            "F PIE": [],
+            "F EAS": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "W1903A",
+          "phase_type": "A",
+          "phase_after": "S1904M",
+          "player_private_phase_after": "S1904M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 1,
+          "orders_submitted": 1,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP B"
+          ],
+          "action_time_s": 0.00013334399955056142,
+          "update_time_s": 0.00044903600064571947,
+          "order_status": {
+            "A VEN": [],
+            "A TRI": [],
+            "F PIE": [],
+            "F EAS": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "S1904M",
+          "phase_type": "M",
+          "phase_after": "S1904R",
+          "player_private_phase_after": "S1904R",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EAS - AEG",
+            "F NAP - TYS",
+            "F PIE - LYO",
+            "A TRI - BUD",
+            "A ROM - APU",
+            "A VEN S A ROM - APU"
+          ],
+          "action_time_s": 0.0012115590006942512,
+          "update_time_s": 0.0020032660004289937,
+          "order_status": {
+            "A VEN": [],
+            "A TRI": [],
+            "F PIE": [],
+            "F EAS": [],
+            "A ROM": [],
+            "F NAP": []
+          }
+        },
+        {
+          "phase_before": "S1904R",
+          "phase_type": "R",
+          "phase_after": "F1904M",
+          "player_private_phase_after": "F1904M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.128100004483713e-05,
+          "update_time_s": 0.00036039699989487417,
+          "order_status": {
+            "A VEN": [],
+            "A BUD": [],
+            "F LYO": [],
+            "F AEG": [],
+            "A APU": [],
+            "F TYS": []
+          }
+        },
+        {
+          "phase_before": "F1904M",
+          "phase_type": "M",
+          "phase_after": "W1904A",
+          "player_private_phase_after": "W1904A",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VEN S F LYO - PIE",
+            "F AEG - EAS",
+            "A APU - ROM",
+            "A BUD H",
+            "F LYO - PIE",
+            "F TYS - LYO"
+          ],
+          "action_time_s": 0.0018814249997376464,
+          "update_time_s": 0.0020645439999498194,
+          "order_status": {
+            "A VEN": [],
+            "A BUD": [],
+            "F LYO": [],
+            "F AEG": [],
+            "A APU": [],
+            "F TYS": []
+          }
+        },
+        {
+          "phase_before": "W1904A",
+          "phase_type": "A",
+          "phase_after": "S1905M",
+          "player_private_phase_after": "S1905M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.1521000235225074e-05,
+          "update_time_s": 0.0002651960003277054,
+          "order_status": {
+            "A VEN": [],
+            "A BUD": [],
+            "F PIE": [],
+            "F EAS": [],
+            "A ROM": [],
+            "F LYO": []
+          }
+        },
+        {
+          "phase_before": "S1905M",
+          "phase_type": "M",
+          "phase_after": "S1905R",
+          "player_private_phase_after": "S1905R",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F PIE S F LYO - MAR",
+            "F EAS - AEG",
+            "F LYO - MAR",
+            "A ROM - APU",
+            "A BUD - TRI",
+            "A VEN S A BUD - TRI"
+          ],
+          "action_time_s": 0.0015217600002870313,
+          "update_time_s": 0.0019529609999153763,
+          "order_status": {
+            "A VEN": [],
+            "A BUD": [],
+            "F PIE": [],
+            "F EAS": [],
+            "A ROM": [],
+            "F LYO": []
+          }
+        },
+        {
+          "phase_before": "S1905R",
+          "phase_type": "R",
+          "phase_after": "F1905M",
+          "player_private_phase_after": "F1905M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.0358999790914822e-05,
+          "update_time_s": 0.0002877289998650667,
+          "order_status": {
+            "A VEN": [],
+            "F PIE": [],
+            "A TRI": [],
+            "F AEG": [],
+            "A APU": [],
+            "F MAR": []
+          }
+        },
+        {
+          "phase_before": "F1905M",
+          "phase_type": "M",
+          "phase_after": "W1905A",
+          "player_private_phase_after": "W1905A",
+          "sc_before": 6,
+          "sc_after": 8,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F AEG - EAS",
+            "A APU - VEN",
+            "F MAR H",
+            "F PIE - LYO",
+            "A TRI H",
+            "A VEN - PIE"
+          ],
+          "action_time_s": 0.001409737000358291,
+          "update_time_s": 0.002012995999393752,
+          "order_status": {
+            "A VEN": [],
+            "F PIE": [],
+            "A TRI": [],
+            "F AEG": [],
+            "A APU": [],
+            "F MAR": []
+          }
+        },
+        {
+          "phase_before": "W1905A",
+          "phase_type": "A",
+          "phase_after": "S1906M",
+          "player_private_phase_after": "S1906M",
+          "sc_before": 8,
+          "sc_after": 8,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP B",
+            "A ROM B"
+          ],
+          "action_time_s": 0.0001337749999947846,
+          "update_time_s": 0.0005045919997428427,
+          "order_status": {
+            "A TRI": [],
+            "F MAR": [],
+            "A PIE": [],
+            "F LYO": [],
+            "F EAS": [],
+            "A VEN": []
+          }
+        },
+        {
+          "phase_before": "S1906M",
+          "phase_type": "M",
+          "phase_after": "F1906M",
+          "player_private_phase_after": "F1906M",
+          "sc_before": 8,
+          "sc_after": 8,
+          "orderable_locations": 8,
+          "orders_submitted": 8,
+          "missing_order_slots": 0,
+          "orders": [
+            "F MAR S F LYO - SPA/SC",
+            "F EAS - AEG",
+            "F LYO - SPA/SC",
+            "F NAP - ION",
+            "A PIE - TYR",
+            "A ROM - VEN",
+            "A TRI - SER",
+            "A VEN - TYR"
+          ],
+          "action_time_s": 0.0017302369997196365,
+          "update_time_s": 0.00215489600032015,
+          "order_status": {
+            "A TRI": [],
+            "F MAR": [],
+            "A PIE": [
+              "bounce"
+            ],
+            "F LYO": [],
+            "F EAS": [],
+            "A VEN": [
+              "bounce"
+            ],
+            "F NAP": [],
+            "A ROM": [
+              "bounce"
+            ]
+          }
+        },
+        {
+          "phase_before": "F1906M",
+          "phase_type": "M",
+          "phase_after": "W1906A",
+          "player_private_phase_after": "W1906A",
+          "sc_before": 8,
+          "sc_after": 11,
+          "orderable_locations": 8,
+          "orders_submitted": 8,
+          "missing_order_slots": 0,
+          "orders": [
+            "F AEG - BUL/SC",
+            "F ION - EAS",
+            "F MAR - LYO",
+            "A PIE - TYR",
+            "A ROM - VEN",
+            "A SER H",
+            "F SPA/SC H",
+            "A VEN - TRI"
+          ],
+          "action_time_s": 0.0016540919996259618,
+          "update_time_s": 0.0020038080001540948,
+          "order_status": {
+            "F MAR": [],
+            "A PIE": [],
+            "A VEN": [],
+            "A ROM": [],
+            "A SER": [],
+            "F SPA/SC": [],
+            "F AEG": [],
+            "F ION": []
+          }
+        },
+        {
+          "phase_before": "W1906A",
+          "phase_type": "A",
+          "phase_after": "S1907M",
+          "player_private_phase_after": "S1907M",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP B",
+            "A ROM B"
+          ],
+          "action_time_s": 0.0001382529999318649,
+          "update_time_s": 0.0004039699997520074,
+          "order_status": {
+            "A SER": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "A TYR": [],
+            "A TRI": [],
+            "A VEN": [],
+            "F BUL/SC": [],
+            "F EAS": []
+          }
+        },
+        {
+          "phase_before": "S1907M",
+          "phase_type": "M",
+          "phase_after": "F1907M",
+          "player_private_phase_after": "F1907M",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 10,
+          "orders_submitted": 10,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EAS S F BUL/SC - AEG",
+            "A TYR S A TRI - VIE",
+            "F BUL/SC - AEG",
+            "F LYO - SPA/SC",
+            "F NAP - ION",
+            "A ROM - VEN",
+            "A SER - BUD",
+            "F SPA/SC - POR",
+            "A TRI - VIE",
+            "A VEN - TRI"
+          ],
+          "action_time_s": 0.0019811459997072234,
+          "update_time_s": 0.0021608879997074837,
+          "order_status": {
+            "A SER": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "A TYR": [
+              "cut"
+            ],
+            "A TRI": [],
+            "A VEN": [],
+            "F BUL/SC": [],
+            "F EAS": [],
+            "F NAP": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "F1907M",
+          "phase_type": "M",
+          "phase_after": "F1907R",
+          "player_private_phase_after": "F1907R",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 10,
+          "orders_submitted": 10,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EAS S F AEG - SMY",
+            "A TRI S A BUD - VIE",
+            "F AEG - SMY",
+            "A BUD - SER",
+            "F ION - AEG",
+            "F POR H",
+            "F SPA/SC - MAO",
+            "A VEN - TYR",
+            "A TYR - BOH",
+            "A VIE S A TYR - BOH"
+          ],
+          "action_time_s": 0.0019245270004830672,
+          "update_time_s": 0.0022323039993352722,
+          "order_status": {
+            "A TYR": [],
+            "F EAS": [],
+            "A BUD": [],
+            "F POR": [],
+            "F SPA/SC": [],
+            "A VIE": [],
+            "A TRI": [
+              "void"
+            ],
+            "F AEG": [],
+            "F ION": [],
+            "A VEN": []
+          }
+        },
+        {
+          "phase_before": "F1907R",
+          "phase_type": "R",
+          "phase_after": "W1907A",
+          "player_private_phase_after": "W1907A",
+          "sc_before": 11,
+          "sc_after": 14,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.1099999685247894e-05,
+          "update_time_s": 0.0004357609996077372,
+          "order_status": {
+            "F EAS": [],
+            "F POR": [],
+            "A VIE": [],
+            "A TRI": [],
+            "A BOH": [],
+            "A SER": [],
+            "F MAO": [],
+            "F SMY": [],
+            "F AEG": [],
+            "A TYR": []
+          }
+        },
+        {
+          "phase_before": "W1907A",
+          "phase_type": "A",
+          "phase_after": "S1908M",
+          "player_private_phase_after": "S1908M",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 3,
+          "orders_submitted": 3,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VEN B",
+            "F NAP B",
+            "A ROM B"
+          ],
+          "action_time_s": 0.00013158000001567416,
+          "update_time_s": 0.0005111540003781556,
+          "order_status": {
+            "F EAS": [],
+            "F POR": [],
+            "A VIE": [],
+            "A TRI": [],
+            "A BOH": [],
+            "A SER": [],
+            "F MAO": [],
+            "F SMY": [],
+            "F AEG": [],
+            "A TYR": []
+          }
+        },
+        {
+          "phase_before": "S1908M",
+          "phase_type": "M",
+          "phase_after": "S1908R",
+          "player_private_phase_after": "S1908R",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 13,
+          "orders_submitted": 13,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VIE S A VEN - TYR",
+            "F AEG - CON",
+            "F MAO - IRI",
+            "F NAP - ION",
+            "F POR - MAO",
+            "A ROM - VEN",
+            "A SER - BUD",
+            "A TRI - SER",
+            "A VEN - PIE",
+            "A BOH - MUN",
+            "A TYR S A BOH - MUN",
+            "F EAS - SYR",
+            "F SMY S F EAS - SYR"
+          ],
+          "action_time_s": 0.0022910959996806923,
+          "update_time_s": 0.0023147209994931472,
+          "order_status": {
+            "F EAS": [
+              "bounce"
+            ],
+            "F POR": [],
+            "A VIE": [
+              "void"
+            ],
+            "A TRI": [],
+            "A BOH": [],
+            "A SER": [],
+            "F MAO": [],
+            "F SMY": [
+              "cut"
+            ],
+            "F AEG": [],
+            "A TYR": [],
+            "A VEN": [],
+            "F NAP": [],
+            "A ROM": []
+          }
+        },
+        {
+          "phase_before": "S1908R",
+          "phase_type": "R",
+          "phase_after": "F1908M",
+          "player_private_phase_after": "F1908M",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 1.947700002347119e-05,
+          "update_time_s": 0.00035011799991480075,
+          "order_status": {
+            "F EAS": [],
+            "A VIE": [],
+            "F SMY": [],
+            "A TYR": [],
+            "F MAO": [],
+            "A SER": [],
+            "A MUN": [],
+            "A BUD": [],
+            "F IRI": [],
+            "F CON": [],
+            "A PIE": [],
+            "F ION": [],
+            "A VEN": []
+          }
+        },
+        {
+          "phase_before": "F1908M",
+          "phase_type": "M",
+          "phase_after": "F1908R",
+          "player_private_phase_after": "F1908R",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 13,
+          "orders_submitted": 13,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VEN S A PIE - TYR",
+            "A SER S A BUD - RUM",
+            "A VIE S A PIE - TYR",
+            "A BUD - RUM",
+            "F CON H",
+            "F ION - AEG",
+            "F IRI - ENG",
+            "F MAO - IRI",
+            "A MUN H",
+            "A PIE - TYR",
+            "A TYR - BOH",
+            "F EAS - SYR",
+            "F SMY S F EAS - SYR"
+          ],
+          "action_time_s": 0.002593230999991647,
+          "update_time_s": 0.002492048000021896,
+          "order_status": {
+            "F EAS": [],
+            "A VIE": [
+              "void"
+            ],
+            "F SMY": [
+              "cut",
+              "dislodged"
+            ],
+            "A TYR": [
+              "bounce"
+            ],
+            "F MAO": [],
+            "A SER": [],
+            "A MUN": [],
+            "A BUD": [],
+            "F IRI": [],
+            "F CON": [],
+            "A PIE": [
+              "bounce"
+            ],
+            "F ION": [],
+            "A VEN": [
+              "void"
+            ]
+          }
+        },
+        {
+          "phase_before": "F1908R",
+          "phase_type": "R",
+          "phase_after": "W1908A",
+          "player_private_phase_after": "W1908A",
+          "sc_before": 14,
+          "sc_after": 16,
+          "orderable_locations": 1,
+          "orders_submitted": 1,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SMY R EAS"
+          ],
+          "action_time_s": 7.148700024117716e-05,
+          "update_time_s": 0.00047177899978123605,
+          "order_status": {
+            "A VIE": [],
+            "A TYR": [],
+            "A SER": [],
+            "A MUN": [],
+            "F CON": [],
+            "A PIE": [],
+            "A VEN": [],
+            "F SYR": [],
+            "F IRI": [],
+            "A RUM": [],
+            "F ENG": [],
+            "F AEG": [],
+            "F SMY": []
+          }
+        },
+        {
+          "phase_before": "W1908A",
+          "phase_type": "A",
+          "phase_after": "S1909M",
+          "player_private_phase_after": "S1909M",
+          "sc_before": 16,
+          "sc_after": 16,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NAP B",
+            "F ROM B"
+          ],
+          "action_time_s": 0.00012725200031127315,
+          "update_time_s": 0.0004890720001640148,
+          "order_status": {
+            "A VIE": [],
+            "A TYR": [],
+            "A SER": [],
+            "A MUN": [],
+            "F CON": [],
+            "A PIE": [],
+            "A VEN": [],
+            "F SYR": [],
+            "F IRI": [],
+            "A RUM": [],
+            "F ENG": [],
+            "F AEG": [],
+            "F EAS": []
+          }
+        },
+        {
+          "phase_before": "S1909M",
+          "phase_type": "M",
+          "phase_after": "F1909M",
+          "player_private_phase_after": "F1909M",
+          "sc_before": 16,
+          "sc_after": 16,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VEN S A PIE - TYR",
+            "A VIE S A RUM - GAL",
+            "F ENG - WAL",
+            "F IRI - MAO",
+            "A MUN - KIE",
+            "F NAP - ION",
+            "A PIE - TYR",
+            "F ROM - TYS",
+            "A RUM - GAL",
+            "A SER - BUD",
+            "A TYR - BOH",
+            "F AEG - SMY",
+            "F CON S F AEG - SMY",
+            "F EAS - SMY",
+            "F SYR S F EAS - SMY"
+          ],
+          "action_time_s": 0.002835172000231978,
+          "update_time_s": 0.002350779999687802,
+          "order_status": {
+            "A VIE": [],
+            "A TYR": [],
+            "A SER": [],
+            "A MUN": [],
+            "F CON": [],
+            "A PIE": [],
+            "A VEN": [],
+            "F SYR": [],
+            "F IRI": [],
+            "A RUM": [],
+            "F ENG": [],
+            "F AEG": [
+              "bounce"
+            ],
+            "F EAS": [
+              "bounce"
+            ],
+            "F NAP": [],
+            "F ROM": []
+          }
+        },
+        {
+          "phase_before": "F1909M",
+          "phase_type": "M",
+          "phase_after": "F1909R",
+          "player_private_phase_after": "F1909R",
+          "sc_before": 16,
+          "sc_after": 16,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "A VIE S A BUD - GAL",
+            "F WAL S F MAO - IRI",
+            "A BUD - RUM",
+            "F ION - EAS",
+            "A KIE H",
+            "F MAO - IRI",
+            "A TYR - MUN",
+            "F TYS - WES",
+            "A VEN - TYR",
+            "F AEG - SMY",
+            "F CON S F AEG - SMY",
+            "F EAS - SMY",
+            "F SYR S F EAS - SMY",
+            "A BOH - SIL",
+            "A GAL S A BOH - SIL"
+          ],
+          "action_time_s": 0.0028127610003139125,
+          "update_time_s": 0.0024356120002266834,
+          "order_status": {
+            "A VIE": [
+              "void"
+            ],
+            "F CON": [
+              "cut"
+            ],
+            "A VEN": [],
+            "F SYR": [],
+            "F AEG": [
+              "bounce"
+            ],
+            "F EAS": [],
+            "A BOH": [],
+            "A BUD": [],
+            "A KIE": [],
+            "A TYR": [],
+            "F MAO": [],
+            "A GAL": [],
+            "F WAL": [],
+            "F ION": [],
+            "F TYS": []
+          }
+        },
+        {
+          "phase_before": "F1909R",
+          "phase_type": "R",
+          "phase_after": "COMPLETED",
+          "player_private_phase_after": "COMPLETED",
+          "sc_before": 16,
+          "sc_after": 18,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 1.916699966386659e-05,
+          "update_time_s": 0.0004139890006626956,
+          "order_status": {
+            "A VIE": [],
+            "F CON": [],
+            "F SYR": [],
+            "F AEG": [],
+            "A KIE": [],
+            "A GAL": [],
+            "F WAL": [],
+            "A TYR": [],
+            "F SMY": [],
+            "A SIL": [
+              "disband"
+            ],
+            "A RUM": [],
+            "A MUN": [],
+            "F IRI": [],
+            "F EAS": [],
+            "F WES": []
+          }
+        }
+      ],
+      "method_times": {
+        "new_game": [
+          0.006183102999784751
+        ],
+        "get_actions": [
+          0.0012125709999963874,
+          0.0008800169998721685,
+          0.0001191970004583709,
+          0.0011487289993965533,
+          0.0012465949994293624,
+          0.0001489040005253628,
+          0.0011486690000310773,
+          3.486700006760657e-05,
+          0.00150939700051822,
+          2.2442999579652678e-05,
+          0.00013334399955056142,
+          0.0012115590006942512,
+          2.128100004483713e-05,
+          0.0018814249997376464,
+          2.1521000235225074e-05,
+          0.0015217600002870313,
+          2.0358999790914822e-05,
+          0.001409737000358291,
+          0.0001337749999947846,
+          0.0017302369997196365,
+          0.0016540919996259618,
+          0.0001382529999318649,
+          0.0019811459997072234,
+          0.0019245270004830672,
+          2.1099999685247894e-05,
+          0.00013158000001567416,
+          0.0022910959996806923,
+          1.947700002347119e-05,
+          0.002593230999991647,
+          7.148700024117716e-05,
+          0.00012725200031127315,
+          0.002835172000231978,
+          0.0028127610003139125,
+          1.916699966386659e-05
+        ],
+        "update_game": [
+          0.0016305079998346628,
+          0.0016886180001165485,
+          0.0002641630007929052,
+          0.001931750999574433,
+          0.0019359789994268795,
+          0.00036128800002188655,
+          0.0026841950002562953,
+          0.000499691999721108,
+          0.0019519400002536713,
+          0.00042717399992397986,
+          0.00044903600064571947,
+          0.0020032660004289937,
+          0.00036039699989487417,
+          0.0020645439999498194,
+          0.0002651960003277054,
+          0.0019529609999153763,
+          0.0002877289998650667,
+          0.002012995999393752,
+          0.0005045919997428427,
+          0.00215489600032015,
+          0.0020038080001540948,
+          0.0004039699997520074,
+          0.0021608879997074837,
+          0.0022323039993352722,
+          0.0004357609996077372,
+          0.0005111540003781556,
+          0.0023147209994931472,
+          0.00035011799991480075,
+          0.002492048000021896,
+          0.00047177899978123605,
+          0.0004890720001640148,
+          0.002350779999687802,
+          0.0024356120002266834,
+          0.0004139890006626956
+        ]
+      },
+      "order_counts": {
+        "MOVE": 100,
+        "SUPPORT": 31,
+        "BUILD": 12,
+        "HOLD": 9,
+        "RETREAT": 1
+      },
+      "result_counts": {
+        "SUCCESS": 249,
+        "bounce": 9,
+        "cut": 4,
+        "void": 5,
+        "dislodged": 1,
+        "disband": 1
+      },
+      "warnings": [],
+      "errors": [],
+      "sync_mismatches": 0,
+      "legality_flags": 0,
+      "missing_order_slots": 1,
+      "constructor_time": 3.901499985659029e-05
+    }
+  ]
+}

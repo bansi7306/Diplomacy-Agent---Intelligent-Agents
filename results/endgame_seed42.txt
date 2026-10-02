@@ -1,0 +1,86 @@
+Late-game stress suite
+NOTE: These are custom robustness tests, NOT official marking scenarios.
+
+==========================================================================
+ENDGAME TEST: near_win
+==========================================================================
+FRANCE starts on 16 SCs. Tests whether the agent can convert a large advantage into the final two centres needed for a solo win.
+Controlled power : FRANCE
+Starting phase   : F1915M
+Starting SCs     : 16
+Runs             : 3
+--------------------------------------------------------------------------
+Final SCs        : 18.00 ± 0.00
+SC change        : +2.00 ± 0.00
+Wins             : 100.00%
+Survives         : 0.00%
+Defeats          : 0.00%
+Diagnostic focus : Can a 16-SC leader actually convert the lead into 18?
+
+Per-run results:
+   1. seed=42     SC 16 -> 18 (+2), WIN, end year 1918
+   2. seed=43     SC 16 -> 18 (+2), WIN, end year 1917
+   3. seed=44     SC 16 -> 18 (+2), WIN, end year 1918
+
+==========================================================================
+ENDGAME TEST: survival
+==========================================================================
+AUSTRIA starts on only 2 SCs while TURKEY controls 16. Tests whether a weak surviving power preserves units/centres instead of collapsing immediately.
+Controlled power : AUSTRIA
+Starting phase   : F1915M
+Starting SCs     : 2
+Runs             : 3
+--------------------------------------------------------------------------
+Final SCs        : 0.33 ± 0.47
+SC change        : -1.67 ± 0.47
+Wins             : 0.00%
+Survives         : 33.33%
+Defeats          : 66.67%
+Diagnostic focus : Can a 2-SC power avoid immediate elimination / recover?
+
+Per-run results:
+   1. seed=42     SC  2 ->  0 (-2), DEFEAT, end year 1918
+   2. seed=43     SC  2 ->  0 (-2), DEFEAT, end year 1918
+   3. seed=44     SC  2 ->  1 (-1), SURVIVE, end year 1920
+
+==========================================================================
+ENDGAME TEST: three_power
+==========================================================================
+Only GERMANY, FRANCE and TURKEY remain (10/12/12 SCs). Tests dense late-game play when most countries have already been eliminated.
+Controlled power : GERMANY
+Starting phase   : F1915M
+Starting SCs     : 10
+Runs             : 3
+--------------------------------------------------------------------------
+Final SCs        : 8.67 ± 0.94
+SC change        : -1.33 ± 0.94
+Wins             : 0.00%
+Survives         : 100.00%
+Defeats          : 0.00%
+Diagnostic focus : Does the agent behave sensibly after four powers are gone?
+
+Per-run results:
+   1. seed=42     SC 10 ->  8 (-2), SURVIVE, end year 1920
+   2. seed=43     SC 10 -> 10 (+0), SURVIVE, end year 1920
+   3. seed=44     SC 10 ->  8 (-2), SURVIVE, end year 1920
+
+==========================================================================
+ENDGAME TEST: deadline
+==========================================================================
+Same 3-power distribution as the dense endgame, but starting in Fall 1919. Tests behaviour when only a very small amount of game time remains before the assignment's 1920 cutoff.
+Controlled power : GERMANY
+Starting phase   : F1919M
+Starting SCs     : 10
+Runs             : 3
+--------------------------------------------------------------------------
+Final SCs        : 7.00 ± 0.00
+SC change        : -3.00 ± 0.00
+Wins             : 0.00%
+Survives         : 100.00%
+Defeats          : 0.00%
+Diagnostic focus : Does the agent make useful final-year decisions before 1920?
+
+Per-run results:
+   1. seed=42     SC 10 ->  7 (-3), SURVIVE, end year 1920
+   2. seed=43     SC 10 ->  7 (-3), SURVIVE, end year 1920
+   3. seed=44     SC 10 ->  7 (-3), SURVIVE, end year 1920

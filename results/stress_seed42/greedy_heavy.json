@@ -1,0 +1,249 @@
+{
+  "label": "Unofficial stress: greedy_heavy",
+  "repeats": 3,
+  "seed": 42,
+  "rows": {
+    "AUSTRIA": {
+      "power": "AUSTRIA",
+      "avg_sc": 2.0,
+      "std_sc": 1.4142135623730951,
+      "win_rate": 0.0,
+      "survive_rate": 66.66666666666667,
+      "defeat_rate": 33.333333333333336,
+      "games": 3
+    },
+    "ENGLAND": {
+      "power": "ENGLAND",
+      "avg_sc": 11.333333333333334,
+      "std_sc": 5.90668171555645,
+      "win_rate": 0.0,
+      "survive_rate": 100.0,
+      "defeat_rate": 0.0,
+      "games": 3
+    },
+    "FRANCE": {
+      "power": "FRANCE",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 3
+    },
+    "GERMANY": {
+      "power": "GERMANY",
+      "avg_sc": 4.666666666666667,
+      "std_sc": 5.9066817155564495,
+      "win_rate": 0.0,
+      "survive_rate": 66.66666666666667,
+      "defeat_rate": 33.333333333333336,
+      "games": 3
+    },
+    "ITALY": {
+      "power": "ITALY",
+      "avg_sc": 8.0,
+      "std_sc": 7.0710678118654755,
+      "win_rate": 33.333333333333336,
+      "survive_rate": 66.66666666666667,
+      "defeat_rate": 0.0,
+      "games": 3
+    },
+    "RUSSIA": {
+      "power": "RUSSIA",
+      "avg_sc": 5.0,
+      "std_sc": 5.715476066494082,
+      "win_rate": 0.0,
+      "survive_rate": 66.66666666666667,
+      "defeat_rate": 33.333333333333336,
+      "games": 3
+    },
+    "TURKEY": {
+      "power": "TURKEY",
+      "avg_sc": 14.333333333333334,
+      "std_sc": 5.185449728701348,
+      "win_rate": 66.66666666666667,
+      "survive_rate": 33.333333333333336,
+      "defeat_rate": 0.0,
+      "games": 3
+    },
+    "ALL": {
+      "power": "ALL",
+      "avg_sc": 9.047619047619047,
+      "std_sc": 7.377418508860351,
+      "win_rate": 28.571428571428573,
+      "survive_rate": 57.142857142857146,
+      "defeat_rate": 14.285714285714286,
+      "games": 21
+    }
+  },
+  "game_records": [
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "AUSTRIA",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "ENGLAND",
+      "score": 15,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1918
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "GERMANY",
+      "score": 1,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "ITALY",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "RUSSIA",
+      "score": 2,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 1,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1912
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "AUSTRIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "ENGLAND",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1916
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1909
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "GERMANY",
+      "score": 13,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "ITALY",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "RUSSIA",
+      "score": 13,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 2,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "AUSTRIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "ENGLAND",
+      "score": 16,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1909
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "GERMANY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1912
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "RUSSIA",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1920
+    },
+    {
+      "label": "Unofficial stress: greedy_heavy",
+      "repeat": 3,
+      "power": "TURKEY",
+      "score": 7,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    }
+  ]
+}

@@ -1,0 +1,1804 @@
+{
+  "aggregate": {
+    "games": 1,
+    "avg_sc": 18.0,
+    "std_sc": 0.0,
+    "win_rate": 100.0,
+    "survive_rate": 0.0,
+    "defeat_rate": 0.0,
+    "order_counts": {
+      "MOVE": 115,
+      "HOLD": 62,
+      "BUILD": 14,
+      "SUPPORT": 63
+    },
+    "result_counts": {
+      "SUCCESS": 421,
+      "void": 16,
+      "disband": 4,
+      "bounce": 19
+    },
+    "method_times": {
+      "new_game": [
+        0.006003941000017221
+      ],
+      "get_actions": [
+        0.0015814530006537098,
+        0.0011268070002188324,
+        0.0001357080000161659,
+        0.001236996999978146,
+        0.001452116999644204,
+        0.00012009900001430651,
+        0.0016543319998163497,
+        0.0016139560002557118,
+        2.3986000087461434e-05,
+        2.114000017172657e-05,
+        0.0013859109994882601,
+        2.595899968582671e-05,
+        0.0017564069994477904,
+        2.0989999939047266e-05,
+        0.00012748300014209235,
+        0.0015786179992574034,
+        0.0017679180000413908,
+        0.00012897600026917644,
+        0.0015057600003274274,
+        0.0019742320000659674,
+        0.0001515889998700004,
+        0.0019514479999998002,
+        2.199199934693752e-05,
+        0.0021861960003661807,
+        0.00013734200001636054,
+        0.0024732329993639723,
+        4.3433000428194646e-05,
+        0.002544509000472317,
+        0.00019187599991710158,
+        0.0026771719994940213,
+        2.060899987554876e-05,
+        0.002910506000262103,
+        0.00012678199982474325,
+        0.003172284999891417,
+        0.003619697999965865,
+        2.842399953806307e-05,
+        2.0618999769794755e-05,
+        0.0037078960003782413,
+        4.089800040674163e-05,
+        0.0032525790002182475,
+        2.8654000743699726e-05,
+        0.0001350169995930628,
+        0.003299637999589322,
+        0.003358740999829024,
+        3.387400010979036e-05
+      ],
+      "update_game": [
+        0.0016634800003885175,
+        0.0016773770003055688,
+        0.0002509780006221263,
+        0.0019045400003960822,
+        0.001913165000587469,
+        0.0003928280002583051,
+        0.0019246680003561778,
+        0.0019342159994266694,
+        0.00043097100024169777,
+        0.00038372099970729323,
+        0.0018649739995453274,
+        0.00034217199936392717,
+        0.0018403370004307362,
+        0.00037771000006614486,
+        0.0003270030001658597,
+        0.0019171339999957127,
+        0.0019258799993622233,
+        0.0005189389994484372,
+        0.0020282340001358534,
+        0.002268592999826069,
+        0.0004586040004141978,
+        0.002289101999849663,
+        0.00027398200018069474,
+        0.0023983199998838245,
+        0.0006443580004997784,
+        0.002112596000188205,
+        0.00033516900020913454,
+        0.0022037190001356066,
+        0.00042683299943746533,
+        0.0024122770000758464,
+        0.0004916569996566977,
+        0.0022572210000362247,
+        0.0004568599997583078,
+        0.002408108999588876,
+        0.0023559989995192154,
+        0.000552673000129289,
+        0.000440619999608316,
+        0.0022787830002926057,
+        0.0004478329992707586,
+        0.00224552899999253,
+        0.000533446999725129,
+        0.0006065560000934056,
+        0.0022744049992979853,
+        0.002454688000398164,
+        0.0006017470004735515
+      ],
+      "__init__": [
+        3.804199968726607e-05
+      ]
+    },
+    "warnings": 0,
+    "errors": 0,
+    "sync_mismatches": 0,
+    "legality_flags": 0,
+    "missing_order_slots": 4,
+    "per_power_avg_sc": {
+      "ENGLAND": 18.0
+    }
+  },
+  "games": [
+    {
+      "player_power": "ENGLAND",
+      "final_sc": 18,
+      "outcome": "WIN",
+      "end_year": 1912,
+      "phases": [
+        {
+          "phase_before": "S1901M",
+          "phase_type": "M",
+          "phase_after": "F1901M",
+          "player_private_phase_after": "F1901M",
+          "sc_before": 3,
+          "sc_after": 3,
+          "orderable_locations": 3,
+          "orders_submitted": 3,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EDI - NWG",
+            "F LON - NTH",
+            "A LVP H"
+          ],
+          "action_time_s": 0.0015814530006537098,
+          "update_time_s": 0.0016634800003885175,
+          "order_status": {
+            "F EDI": [],
+            "F LON": [],
+            "A LVP": []
+          }
+        },
+        {
+          "phase_before": "F1901M",
+          "phase_type": "M",
+          "phase_after": "W1901A",
+          "player_private_phase_after": "W1901A",
+          "sc_before": 3,
+          "sc_after": 5,
+          "orderable_locations": 3,
+          "orders_submitted": 3,
+          "missing_order_slots": 0,
+          "orders": [
+            "A LVP H",
+            "F NTH - HOL",
+            "F NWG - NWY"
+          ],
+          "action_time_s": 0.0011268070002188324,
+          "update_time_s": 0.0016773770003055688,
+          "order_status": {
+            "A LVP": [],
+            "F NWG": [],
+            "F NTH": []
+          }
+        },
+        {
+          "phase_before": "W1901A",
+          "phase_type": "A",
+          "phase_after": "S1902M",
+          "player_private_phase_after": "S1902M",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EDI B",
+            "F LON B"
+          ],
+          "action_time_s": 0.0001357080000161659,
+          "update_time_s": 0.0002509780006221263,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F HOL": []
+          }
+        },
+        {
+          "phase_before": "S1902M",
+          "phase_type": "M",
+          "phase_after": "F1902M",
+          "player_private_phase_after": "F1902M",
+          "sc_before": 5,
+          "sc_after": 5,
+          "orderable_locations": 5,
+          "orders_submitted": 5,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NWY S F EDI - NTH",
+            "F LON S F EDI - NTH",
+            "F HOL S F EDI - NTH",
+            "F EDI - NTH",
+            "A LVP H"
+          ],
+          "action_time_s": 0.001236996999978146,
+          "update_time_s": 0.0019045400003960822,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F HOL": [],
+            "F EDI": [],
+            "F LON": []
+          }
+        },
+        {
+          "phase_before": "F1902M",
+          "phase_type": "M",
+          "phase_after": "W1902A",
+          "player_private_phase_after": "W1902A",
+          "sc_before": 5,
+          "sc_after": 6,
+          "orderable_locations": 5,
+          "orders_submitted": 5,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F HOL - BEL",
+            "F NWY S F LON - NTH",
+            "F HOL - BEL",
+            "F LON - ENG",
+            "A LVP H"
+          ],
+          "action_time_s": 0.001452116999644204,
+          "update_time_s": 0.001913165000587469,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [
+              "void"
+            ],
+            "F HOL": [],
+            "F LON": [],
+            "F NTH": []
+          }
+        },
+        {
+          "phase_before": "W1902A",
+          "phase_type": "A",
+          "phase_after": "S1903M",
+          "player_private_phase_after": "S1903M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 2,
+          "orders_submitted": 1,
+          "missing_order_slots": 1,
+          "orders": [
+            "F EDI B"
+          ],
+          "action_time_s": 0.00012009900001430651,
+          "update_time_s": 0.0003928280002583051,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F NTH": [],
+            "F BEL": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "S1903M",
+          "phase_type": "M",
+          "phase_after": "F1903M",
+          "player_private_phase_after": "F1903M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NWY S F EDI - NTH",
+            "F ENG S F EDI - NTH",
+            "F BEL - PIC",
+            "F EDI - NTH",
+            "A LVP H",
+            "F NTH - HOL"
+          ],
+          "action_time_s": 0.0016543319998163497,
+          "update_time_s": 0.0019246680003561778,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F NTH": [],
+            "F BEL": [],
+            "F ENG": [],
+            "F EDI": []
+          }
+        },
+        {
+          "phase_before": "F1903M",
+          "phase_type": "M",
+          "phase_after": "F1903R",
+          "player_private_phase_after": "F1903R",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NWY S F HOL - NTH",
+            "F HOL - NTH",
+            "A LVP H",
+            "F NTH - ENG",
+            "F ENG - BRE",
+            "F PIC S F ENG - BRE"
+          ],
+          "action_time_s": 0.0016139560002557118,
+          "update_time_s": 0.0019342159994266694,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F ENG": [],
+            "F HOL": [],
+            "F PIC": [],
+            "F NTH": []
+          }
+        },
+        {
+          "phase_before": "F1903R",
+          "phase_type": "R",
+          "phase_after": "W1903A",
+          "player_private_phase_after": "W1903A",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.3986000087461434e-05,
+          "update_time_s": 0.00043097100024169777,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F PIC": [],
+            "F BRE": [
+              "disband"
+            ],
+            "F NTH": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "W1903A",
+          "phase_type": "A",
+          "phase_after": "S1904M",
+          "player_private_phase_after": "S1904M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.114000017172657e-05,
+          "update_time_s": 0.00038372099970729323,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F PIC": [],
+            "F BRE": [],
+            "F NTH": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "S1904M",
+          "phase_type": "M",
+          "phase_after": "S1904R",
+          "player_private_phase_after": "S1904R",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F BRE - PIC",
+            "A LVP H",
+            "F NWY - SKA",
+            "F PIC - ENG",
+            "F ENG - BEL",
+            "F NTH S F ENG - BEL"
+          ],
+          "action_time_s": 0.0013859109994882601,
+          "update_time_s": 0.0018649739995453274,
+          "order_status": {
+            "A LVP": [],
+            "F NWY": [],
+            "F PIC": [],
+            "F BRE": [
+              "bounce"
+            ],
+            "F NTH": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "S1904R",
+          "phase_type": "R",
+          "phase_after": "F1904M",
+          "player_private_phase_after": "F1904M",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.595899968582671e-05,
+          "update_time_s": 0.00034217199936392717,
+          "order_status": {
+            "A LVP": [],
+            "F BRE": [],
+            "F NTH": [],
+            "F SKA": [],
+            "F ENG": [],
+            "F BEL": []
+          }
+        },
+        {
+          "phase_before": "F1904M",
+          "phase_type": "M",
+          "phase_after": "F1904R",
+          "player_private_phase_after": "F1904R",
+          "sc_before": 6,
+          "sc_after": 6,
+          "orderable_locations": 6,
+          "orders_submitted": 6,
+          "missing_order_slots": 0,
+          "orders": [
+            "F BRE - PIC",
+            "F ENG - NTH",
+            "A LVP H",
+            "F SKA - DEN",
+            "F NTH - HOL",
+            "F BEL S F NTH - HOL"
+          ],
+          "action_time_s": 0.0017564069994477904,
+          "update_time_s": 0.0018403370004307362,
+          "order_status": {
+            "A LVP": [],
+            "F BRE": [
+              "bounce"
+            ],
+            "F NTH": [],
+            "F SKA": [
+              "bounce"
+            ],
+            "F ENG": [],
+            "F BEL": []
+          }
+        },
+        {
+          "phase_before": "F1904R",
+          "phase_type": "R",
+          "phase_after": "W1904A",
+          "player_private_phase_after": "W1904A",
+          "sc_before": 6,
+          "sc_after": 7,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.0989999939047266e-05,
+          "update_time_s": 0.00037771000006614486,
+          "order_status": {
+            "A LVP": [],
+            "F BRE": [],
+            "F SKA": [],
+            "F BEL": [],
+            "F HOL": [],
+            "F NTH": []
+          }
+        },
+        {
+          "phase_before": "W1904A",
+          "phase_type": "A",
+          "phase_after": "S1905M",
+          "player_private_phase_after": "S1905M",
+          "sc_before": 7,
+          "sc_after": 7,
+          "orderable_locations": 2,
+          "orders_submitted": 1,
+          "missing_order_slots": 1,
+          "orders": [
+            "F EDI B"
+          ],
+          "action_time_s": 0.00012748300014209235,
+          "update_time_s": 0.0003270030001658597,
+          "order_status": {
+            "A LVP": [],
+            "F BRE": [],
+            "F SKA": [],
+            "F BEL": [],
+            "F HOL": [],
+            "F NTH": []
+          }
+        },
+        {
+          "phase_before": "S1905M",
+          "phase_type": "M",
+          "phase_after": "F1905M",
+          "player_private_phase_after": "F1905M",
+          "sc_before": 7,
+          "sc_after": 7,
+          "orderable_locations": 7,
+          "orders_submitted": 7,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EDI S F BEL - NTH",
+            "F SKA S F NTH - DEN",
+            "F HOL S F BEL - NTH",
+            "F BEL - NTH",
+            "F BRE - MAO",
+            "A LVP H",
+            "F NTH - DEN"
+          ],
+          "action_time_s": 0.0015786179992574034,
+          "update_time_s": 0.0019171339999957127,
+          "order_status": {
+            "A LVP": [],
+            "F BRE": [],
+            "F SKA": [],
+            "F BEL": [],
+            "F HOL": [],
+            "F NTH": [],
+            "F EDI": []
+          }
+        },
+        {
+          "phase_before": "F1905M",
+          "phase_type": "M",
+          "phase_after": "W1905A",
+          "player_private_phase_after": "W1905A",
+          "sc_before": 7,
+          "sc_after": 9,
+          "orderable_locations": 7,
+          "orders_submitted": 7,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SKA S F NTH - DEN",
+            "F DEN H",
+            "F EDI - NTH",
+            "F HOL - KIE",
+            "A LVP H",
+            "F MAO - SPA/NC",
+            "F NTH - HOL"
+          ],
+          "action_time_s": 0.0017679180000413908,
+          "update_time_s": 0.0019258799993622233,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [
+              "void"
+            ],
+            "F HOL": [],
+            "F EDI": [],
+            "F MAO": [],
+            "F NTH": [],
+            "F DEN": []
+          }
+        },
+        {
+          "phase_before": "W1905A",
+          "phase_type": "A",
+          "phase_after": "S1906M",
+          "player_private_phase_after": "S1906M",
+          "sc_before": 9,
+          "sc_after": 9,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EDI B",
+            "F LON B"
+          ],
+          "action_time_s": 0.00012897600026917644,
+          "update_time_s": 0.0005189389994484372,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F NTH": [],
+            "F SPA/NC": [],
+            "F HOL": []
+          }
+        },
+        {
+          "phase_before": "S1906M",
+          "phase_type": "M",
+          "phase_after": "F1906M",
+          "player_private_phase_after": "F1906M",
+          "sc_before": 9,
+          "sc_after": 9,
+          "orderable_locations": 9,
+          "orders_submitted": 9,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SKA S F DEN - SWE",
+            "F LON S F EDI - NTH",
+            "F DEN - SWE",
+            "F EDI - NWG",
+            "F KIE - BAL",
+            "A LVP H",
+            "F SPA/NC - POR",
+            "F HOL - BEL",
+            "F NTH S F HOL - BEL"
+          ],
+          "action_time_s": 0.0015057600003274274,
+          "update_time_s": 0.0020282340001358534,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F NTH": [],
+            "F SPA/NC": [],
+            "F HOL": [],
+            "F EDI": [],
+            "F LON": [
+              "void"
+            ]
+          }
+        },
+        {
+          "phase_before": "F1906M",
+          "phase_type": "M",
+          "phase_after": "W1906A",
+          "player_private_phase_after": "W1906A",
+          "sc_before": 9,
+          "sc_after": 11,
+          "orderable_locations": 9,
+          "orders_submitted": 9,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SKA S F BAL - SWE",
+            "F BAL - BOT",
+            "F BEL H",
+            "F LON - NTH",
+            "A LVP H",
+            "F NTH - HOL",
+            "F NWG - NWY",
+            "F POR H",
+            "F SWE H"
+          ],
+          "action_time_s": 0.0019742320000659674,
+          "update_time_s": 0.002268592999826069,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [
+              "void"
+            ],
+            "F NTH": [],
+            "F LON": [],
+            "F SWE": [],
+            "F BAL": [],
+            "F POR": [],
+            "F BEL": [],
+            "F NWG": []
+          }
+        },
+        {
+          "phase_before": "W1906A",
+          "phase_type": "A",
+          "phase_after": "S1907M",
+          "player_private_phase_after": "S1907M",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F LON B",
+            "F EDI B"
+          ],
+          "action_time_s": 0.0001515889998700004,
+          "update_time_s": 0.0004586040004141978,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [],
+            "F SWE": [],
+            "F POR": [],
+            "F BEL": [],
+            "F HOL": [],
+            "F NTH": [],
+            "F BOT": [],
+            "F NWY": []
+          }
+        },
+        {
+          "phase_before": "S1907M",
+          "phase_type": "M",
+          "phase_after": "S1907R",
+          "player_private_phase_after": "S1907R",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 11,
+          "orders_submitted": 11,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F BEL - ENG",
+            "F LON S F BEL - ENG",
+            "F BEL - ENG",
+            "F EDI - NWG",
+            "F HOL - KIE",
+            "A LVP H",
+            "F POR - SPA/SC",
+            "F SKA - DEN",
+            "F SWE - BAL",
+            "F BOT - STP/SC",
+            "F NWY S F BOT - STP/SC"
+          ],
+          "action_time_s": 0.0019514479999998002,
+          "update_time_s": 0.002289101999849663,
+          "order_status": {
+            "A LVP": [],
+            "F SKA": [],
+            "F SWE": [],
+            "F POR": [],
+            "F BEL": [],
+            "F HOL": [],
+            "F NTH": [],
+            "F BOT": [],
+            "F NWY": [],
+            "F LON": [],
+            "F EDI": []
+          }
+        },
+        {
+          "phase_before": "S1907R",
+          "phase_type": "R",
+          "phase_after": "F1907M",
+          "player_private_phase_after": "F1907M",
+          "sc_before": 11,
+          "sc_after": 11,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.199199934693752e-05,
+          "update_time_s": 0.00027398200018069474,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F NWY": [],
+            "F LON": [],
+            "F DEN": [],
+            "F BAL": [],
+            "F SPA/SC": [],
+            "F ENG": [],
+            "F KIE": [],
+            "F STP/SC": [
+              "disband"
+            ],
+            "F NWG": []
+          }
+        },
+        {
+          "phase_before": "F1907M",
+          "phase_type": "M",
+          "phase_after": "W1907A",
+          "player_private_phase_after": "W1907A",
+          "sc_before": 11,
+          "sc_after": 12,
+          "orderable_locations": 11,
+          "orders_submitted": 11,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F LON - ENG",
+            "F SPA/SC - POR",
+            "F KIE S F BAL - BER",
+            "F BAL - BER",
+            "F DEN - BAL",
+            "F ENG - MAO",
+            "F LON - ENG",
+            "A LVP H",
+            "F NWG - NAO",
+            "F NWY - SWE",
+            "F STP/SC H"
+          ],
+          "action_time_s": 0.0021861960003661807,
+          "update_time_s": 0.0023983199998838245,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F NWY": [],
+            "F LON": [],
+            "F DEN": [],
+            "F BAL": [],
+            "F SPA/SC": [],
+            "F ENG": [],
+            "F KIE": [],
+            "F STP/SC": [],
+            "F NWG": []
+          }
+        },
+        {
+          "phase_before": "W1907A",
+          "phase_type": "A",
+          "phase_after": "S1908M",
+          "player_private_phase_after": "S1908M",
+          "sc_before": 12,
+          "sc_after": 12,
+          "orderable_locations": 2,
+          "orders_submitted": 1,
+          "missing_order_slots": 1,
+          "orders": [
+            "F LON B"
+          ],
+          "action_time_s": 0.00013734200001636054,
+          "update_time_s": 0.0006443580004997784,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F KIE": [],
+            "F STP/SC": [],
+            "F SWE": [],
+            "F ENG": [],
+            "F BAL": [],
+            "F BER": [],
+            "F POR": [],
+            "F MAO": [],
+            "F NAO": []
+          }
+        },
+        {
+          "phase_before": "S1908M",
+          "phase_type": "M",
+          "phase_after": "S1908R",
+          "player_private_phase_after": "S1908R",
+          "sc_before": 12,
+          "sc_after": 12,
+          "orderable_locations": 12,
+          "orders_submitted": 12,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F LON - ENG",
+            "F BER - KIE",
+            "F ENG - BRE",
+            "F KIE - HOL",
+            "F LON - ENG",
+            "A LVP H",
+            "F NAO - MAO",
+            "F SWE - DEN",
+            "F MAO - SPA/SC",
+            "F POR S F MAO - SPA/SC",
+            "F STP/SC - LVN",
+            "F BAL S F STP/SC - LVN"
+          ],
+          "action_time_s": 0.0024732329993639723,
+          "update_time_s": 0.002112596000188205,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F KIE": [],
+            "F STP/SC": [],
+            "F SWE": [],
+            "F ENG": [],
+            "F BAL": [],
+            "F BER": [],
+            "F POR": [],
+            "F MAO": [],
+            "F NAO": [],
+            "F LON": []
+          }
+        },
+        {
+          "phase_before": "S1908R",
+          "phase_type": "R",
+          "phase_after": "F1908M",
+          "player_private_phase_after": "F1908M",
+          "sc_before": 12,
+          "sc_after": 12,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 4.3433000428194646e-05,
+          "update_time_s": 0.00033516900020913454,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F POR": [],
+            "F HOL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F BRE": [],
+            "F KIE": [],
+            "F SPA/SC": [
+              "disband"
+            ],
+            "F MAO": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "F1908M",
+          "phase_type": "M",
+          "phase_after": "W1908A",
+          "player_private_phase_after": "W1908A",
+          "sc_before": 12,
+          "sc_after": 14,
+          "orderable_locations": 12,
+          "orders_submitted": 12,
+          "missing_order_slots": 0,
+          "orders": [
+            "F MAO S F ENG - BRE",
+            "F HOL S F DEN - NTH",
+            "F BAL - DEN",
+            "F BRE H",
+            "F DEN - NTH",
+            "F ENG - PIC",
+            "F KIE - DEN",
+            "F LVN - BAL",
+            "A LVP H",
+            "F NTH - ENG",
+            "F POR H",
+            "F SPA/SC H"
+          ],
+          "action_time_s": 0.002544509000472317,
+          "update_time_s": 0.0022037190001356066,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [
+              "bounce"
+            ],
+            "F BAL": [
+              "bounce"
+            ],
+            "F POR": [],
+            "F HOL": [
+              "void"
+            ],
+            "F LVN": [
+              "bounce"
+            ],
+            "F DEN": [
+              "bounce"
+            ],
+            "F BRE": [],
+            "F KIE": [
+              "bounce"
+            ],
+            "F SPA/SC": [],
+            "F MAO": [
+              "void"
+            ],
+            "F ENG": [
+              "bounce"
+            ]
+          }
+        },
+        {
+          "phase_before": "W1908A",
+          "phase_type": "A",
+          "phase_after": "S1909M",
+          "player_private_phase_after": "S1909M",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F LON B",
+            "F EDI B"
+          ],
+          "action_time_s": 0.00019187599991710158,
+          "update_time_s": 0.00042683299943746533,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F POR": [],
+            "F HOL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F BRE": [],
+            "F KIE": [],
+            "F SPA/SC": [],
+            "F MAO": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "S1909M",
+          "phase_type": "M",
+          "phase_after": "S1909R",
+          "player_private_phase_after": "S1909R",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 14,
+          "orders_submitted": 14,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F LON - ENG",
+            "F ENG S F BRE - MAO",
+            "F BAL H",
+            "F BRE - GAS",
+            "F DEN H",
+            "F EDI - NWG",
+            "F HOL - BEL",
+            "F KIE H",
+            "F LON - WAL",
+            "F LVN H",
+            "A LVP H",
+            "F POR - SPA/SC",
+            "F SPA/SC - WES",
+            "F MAO S F SPA/SC - WES"
+          ],
+          "action_time_s": 0.0026771719994940213,
+          "update_time_s": 0.0024122770000758464,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [
+              "void"
+            ],
+            "F BAL": [],
+            "F POR": [],
+            "F HOL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F BRE": [],
+            "F KIE": [],
+            "F SPA/SC": [],
+            "F MAO": [],
+            "F ENG": [
+              "void"
+            ],
+            "F LON": [],
+            "F EDI": []
+          }
+        },
+        {
+          "phase_before": "S1909R",
+          "phase_type": "R",
+          "phase_after": "F1909M",
+          "player_private_phase_after": "F1909M",
+          "sc_before": 14,
+          "sc_after": 14,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.060899987554876e-05,
+          "update_time_s": 0.0004916569996566977,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F MAO": [],
+            "F ENG": [],
+            "F SPA/SC": [],
+            "F BEL": [],
+            "F GAS": [],
+            "F WES": [
+              "disband"
+            ],
+            "F WAL": [],
+            "F NWG": []
+          }
+        },
+        {
+          "phase_before": "F1909M",
+          "phase_type": "M",
+          "phase_after": "W1909A",
+          "player_private_phase_after": "W1909A",
+          "sc_before": 14,
+          "sc_after": 15,
+          "orderable_locations": 14,
+          "orders_submitted": 14,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F BEL - ENG",
+            "F GAS S F ENG - MAO",
+            "F BAL H",
+            "F BEL - ENG",
+            "F DEN H",
+            "F ENG - MAO",
+            "F KIE H",
+            "F LVN H",
+            "A LVP H",
+            "F MAO - NAF",
+            "F NWG - NAO",
+            "F SPA/SC - LYO",
+            "F WAL - IRI",
+            "F WES - TUN"
+          ],
+          "action_time_s": 0.002910506000262103,
+          "update_time_s": 0.0022572210000362247,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F MAO": [],
+            "F ENG": [],
+            "F SPA/SC": [],
+            "F BEL": [],
+            "F GAS": [],
+            "F WES": [],
+            "F WAL": [],
+            "F NWG": []
+          }
+        },
+        {
+          "phase_before": "W1909A",
+          "phase_type": "A",
+          "phase_after": "S1910M",
+          "player_private_phase_after": "S1910M",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 2,
+          "orders_submitted": 1,
+          "missing_order_slots": 1,
+          "orders": [
+            "F LON B"
+          ],
+          "action_time_s": 0.00012678199982474325,
+          "update_time_s": 0.0004568599997583078,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [],
+            "F NAF": [],
+            "F MAO": [],
+            "F LYO": [],
+            "F ENG": [],
+            "F TUN": [],
+            "F IRI": [],
+            "F NAO": []
+          }
+        },
+        {
+          "phase_before": "S1910M",
+          "phase_type": "M",
+          "phase_after": "F1910M",
+          "player_private_phase_after": "F1910M",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "F GAS S F ENG - MAO",
+            "F IRI S F ENG - MAO",
+            "F NAO S F ENG - MAO",
+            "F MAO S F LYO - SPA/SC",
+            "F NTH S F LON - ENG",
+            "F BAL H",
+            "F DEN H",
+            "F ENG - BRE",
+            "F KIE H",
+            "F LON - ENG",
+            "F LVN H",
+            "A LVP H",
+            "F LYO - SPA/SC",
+            "F NAF - WES",
+            "F TUN - TYS"
+          ],
+          "action_time_s": 0.003172284999891417,
+          "update_time_s": 0.002408108999588876,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [
+              "void"
+            ],
+            "F NAF": [],
+            "F MAO": [],
+            "F LYO": [],
+            "F ENG": [],
+            "F TUN": [],
+            "F IRI": [
+              "void"
+            ],
+            "F NAO": [
+              "void"
+            ],
+            "F LON": []
+          }
+        },
+        {
+          "phase_before": "F1910M",
+          "phase_type": "M",
+          "phase_after": "F1910R",
+          "player_private_phase_after": "F1910R",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "F GAS S F BRE - MAO",
+            "F WES S F SPA/SC - LYO",
+            "F IRI S F BRE - MAO",
+            "F NAO S F BRE - MAO",
+            "F TYS S F SPA/SC - LYO",
+            "F BAL H",
+            "F BRE - MAO",
+            "F DEN H",
+            "F KIE H",
+            "F LVN H",
+            "A LVP H",
+            "F MAO - SPA/SC",
+            "F SPA/SC - LYO",
+            "F ENG - BEL",
+            "F NTH S F ENG - BEL"
+          ],
+          "action_time_s": 0.003619697999965865,
+          "update_time_s": 0.0023559989995192154,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [],
+            "F MAO": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F WES": [],
+            "F SPA/SC": [],
+            "F BRE": [],
+            "F TYS": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "F1910R",
+          "phase_type": "R",
+          "phase_after": "W1910A",
+          "player_private_phase_after": "W1910A",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.842399953806307e-05,
+          "update_time_s": 0.000552673000129289,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F WES": [],
+            "F TYS": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "F MAO": [],
+            "F BEL": []
+          }
+        },
+        {
+          "phase_before": "W1910A",
+          "phase_type": "A",
+          "phase_after": "S1911M",
+          "player_private_phase_after": "S1911M",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.0618999769794755e-05,
+          "update_time_s": 0.000440619999608316,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F WES": [],
+            "F TYS": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "F MAO": [],
+            "F BEL": []
+          }
+        },
+        {
+          "phase_before": "S1911M",
+          "phase_type": "M",
+          "phase_after": "S1911R",
+          "player_private_phase_after": "S1911R",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "F NTH S F BEL - ENG",
+            "F IRI S F GAS - MAO",
+            "F NAO S F GAS - MAO",
+            "F BAL H",
+            "F BEL - ENG",
+            "F DEN H",
+            "F GAS - MAO",
+            "F KIE H",
+            "F LVN H",
+            "A LVP H",
+            "F MAO - SPA/SC",
+            "F TYS - TUS",
+            "F WES - TYS",
+            "F SPA/SC - MAR",
+            "F LYO S F SPA/SC - MAR"
+          ],
+          "action_time_s": 0.0037078960003782413,
+          "update_time_s": 0.0022787830002926057,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F GAS": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F WES": [],
+            "F TYS": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "F MAO": [],
+            "F BEL": []
+          }
+        },
+        {
+          "phase_before": "S1911R",
+          "phase_type": "R",
+          "phase_after": "F1911M",
+          "player_private_phase_after": "F1911M",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 4.089800040674163e-05,
+          "update_time_s": 0.0004478329992707586,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F LYO": [],
+            "F MAO": [],
+            "F TYS": [],
+            "F TUS": [],
+            "F MAR": [],
+            "F SPA/SC": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "F1911M",
+          "phase_type": "M",
+          "phase_after": "F1911R",
+          "player_private_phase_after": "F1911R",
+          "sc_before": 15,
+          "sc_after": 15,
+          "orderable_locations": 15,
+          "orders_submitted": 15,
+          "missing_order_slots": 0,
+          "orders": [
+            "F IRI S F ENG - MAO",
+            "F NAO S F ENG - MAO",
+            "F TYS S F TUS - ROM",
+            "F BAL H",
+            "F DEN - NTH",
+            "F ENG - MAO",
+            "F KIE H",
+            "F LVN H",
+            "A LVP H",
+            "F MAO - SPA/SC",
+            "F NTH - ENG",
+            "F SPA/SC - LYO",
+            "F TUS - ROM",
+            "F LYO - PIE",
+            "F MAR S F LYO - PIE"
+          ],
+          "action_time_s": 0.0032525790002182475,
+          "update_time_s": 0.00224552899999253,
+          "order_status": {
+            "A LVP": [],
+            "F NTH": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F DEN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F LYO": [],
+            "F MAO": [],
+            "F TYS": [],
+            "F TUS": [],
+            "F MAR": [],
+            "F SPA/SC": [],
+            "F ENG": []
+          }
+        },
+        {
+          "phase_before": "F1911R",
+          "phase_type": "R",
+          "phase_after": "W1911A",
+          "player_private_phase_after": "W1911A",
+          "sc_before": 15,
+          "sc_after": 17,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 2.8654000743699726e-05,
+          "update_time_s": 0.000533446999725129,
+          "order_status": {
+            "A LVP": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F TYS": [],
+            "F MAR": [],
+            "F ENG": [],
+            "F NTH": [],
+            "F PIE": [],
+            "F SPA/SC": [],
+            "F ROM": [],
+            "F LYO": [],
+            "F MAO": []
+          }
+        },
+        {
+          "phase_before": "W1911A",
+          "phase_type": "A",
+          "phase_after": "S1912M",
+          "player_private_phase_after": "S1912M",
+          "sc_before": 17,
+          "sc_after": 17,
+          "orderable_locations": 2,
+          "orders_submitted": 2,
+          "missing_order_slots": 0,
+          "orders": [
+            "F EDI B",
+            "F LON B"
+          ],
+          "action_time_s": 0.0001350169995930628,
+          "update_time_s": 0.0006065560000934056,
+          "order_status": {
+            "A LVP": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F TYS": [],
+            "F MAR": [],
+            "F ENG": [],
+            "F NTH": [],
+            "F PIE": [],
+            "F SPA/SC": [],
+            "F ROM": [],
+            "F LYO": [],
+            "F MAO": []
+          }
+        },
+        {
+          "phase_before": "S1912M",
+          "phase_type": "M",
+          "phase_after": "F1912M",
+          "player_private_phase_after": "F1912M",
+          "sc_before": 17,
+          "sc_after": 17,
+          "orderable_locations": 17,
+          "orders_submitted": 17,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SPA/SC - LYO",
+            "F PIE S F MAR - LYO",
+            "F IRI S F ENG - MAO",
+            "F NAO S F ENG - MAO",
+            "F TYS S F ROM - NAP",
+            "F NTH S F LON - ENG",
+            "F BAL H",
+            "F EDI H",
+            "F ENG - MAO",
+            "F KIE H",
+            "F LON - ENG",
+            "F LVN H",
+            "A LVP H",
+            "F LYO - WES",
+            "F MAO - WES",
+            "F MAR - LYO",
+            "F ROM - NAP"
+          ],
+          "action_time_s": 0.003299637999589322,
+          "update_time_s": 0.0022744049992979853,
+          "order_status": {
+            "A LVP": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F KIE": [],
+            "F IRI": [
+              "void"
+            ],
+            "F NAO": [
+              "void"
+            ],
+            "F TYS": [],
+            "F MAR": [
+              "bounce"
+            ],
+            "F ENG": [
+              "bounce"
+            ],
+            "F NTH": [
+              "void"
+            ],
+            "F PIE": [
+              "void"
+            ],
+            "F SPA/SC": [
+              "bounce"
+            ],
+            "F ROM": [],
+            "F LYO": [
+              "bounce"
+            ],
+            "F MAO": [
+              "bounce"
+            ],
+            "F EDI": [],
+            "F LON": [
+              "bounce"
+            ]
+          }
+        },
+        {
+          "phase_before": "F1912M",
+          "phase_type": "M",
+          "phase_after": "F1912R",
+          "player_private_phase_after": "F1912R",
+          "sc_before": 17,
+          "sc_after": 17,
+          "orderable_locations": 17,
+          "orders_submitted": 17,
+          "missing_order_slots": 0,
+          "orders": [
+            "F SPA/SC - LYO",
+            "F PIE S F MAR - LYO",
+            "F IRI S F ENG - MAO",
+            "F NAO S F ENG - MAO",
+            "F NTH S F LON - ENG",
+            "F EDI H",
+            "F ENG - MAO",
+            "F LON - ENG",
+            "F LVN H",
+            "A LVP H",
+            "F LYO - TYS",
+            "F MAO - WES",
+            "F MAR - LYO",
+            "F NAP H",
+            "F TYS - ROM",
+            "F BAL - BER",
+            "F KIE S F BAL - BER"
+          ],
+          "action_time_s": 0.003358740999829024,
+          "update_time_s": 0.002454688000398164,
+          "order_status": {
+            "A LVP": [],
+            "F BAL": [],
+            "F LVN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F TYS": [
+              "bounce"
+            ],
+            "F MAR": [
+              "bounce"
+            ],
+            "F ENG": [],
+            "F NTH": [],
+            "F PIE": [
+              "void"
+            ],
+            "F SPA/SC": [
+              "bounce"
+            ],
+            "F LYO": [
+              "bounce"
+            ],
+            "F MAO": [],
+            "F EDI": [],
+            "F LON": [],
+            "F NAP": []
+          }
+        },
+        {
+          "phase_before": "F1912R",
+          "phase_type": "R",
+          "phase_after": "COMPLETED",
+          "player_private_phase_after": "COMPLETED",
+          "sc_before": 17,
+          "sc_after": 18,
+          "orderable_locations": 0,
+          "orders_submitted": 0,
+          "missing_order_slots": 0,
+          "orders": [],
+          "action_time_s": 3.387400010979036e-05,
+          "update_time_s": 0.0006017470004735515,
+          "order_status": {
+            "A LVP": [],
+            "F LVN": [],
+            "F KIE": [],
+            "F IRI": [],
+            "F NAO": [],
+            "F TYS": [],
+            "F MAR": [],
+            "F NTH": [],
+            "F PIE": [],
+            "F SPA/SC": [],
+            "F LYO": [],
+            "F EDI": [],
+            "F NAP": [],
+            "F BER": [],
+            "F MAO": [],
+            "F WES": [],
+            "F ENG": []
+          }
+        }
+      ],
+      "method_times": {
+        "new_game": [
+          0.006003941000017221
+        ],
+        "get_actions": [
+          0.0015814530006537098,
+          0.0011268070002188324,
+          0.0001357080000161659,
+          0.001236996999978146,
+          0.001452116999644204,
+          0.00012009900001430651,
+          0.0016543319998163497,
+          0.0016139560002557118,
+          2.3986000087461434e-05,
+          2.114000017172657e-05,
+          0.0013859109994882601,
+          2.595899968582671e-05,
+          0.0017564069994477904,
+          2.0989999939047266e-05,
+          0.00012748300014209235,
+          0.0015786179992574034,
+          0.0017679180000413908,
+          0.00012897600026917644,
+          0.0015057600003274274,
+          0.0019742320000659674,
+          0.0001515889998700004,
+          0.0019514479999998002,
+          2.199199934693752e-05,
+          0.0021861960003661807,
+          0.00013734200001636054,
+          0.0024732329993639723,
+          4.3433000428194646e-05,
+          0.002544509000472317,
+          0.00019187599991710158,
+          0.0026771719994940213,
+          2.060899987554876e-05,
+          0.002910506000262103,
+          0.00012678199982474325,
+          0.003172284999891417,
+          0.003619697999965865,
+          2.842399953806307e-05,
+          2.0618999769794755e-05,
+          0.0037078960003782413,
+          4.089800040674163e-05,
+          0.0032525790002182475,
+          2.8654000743699726e-05,
+          0.0001350169995930628,
+          0.003299637999589322,
+          0.003358740999829024,
+          3.387400010979036e-05
+        ],
+        "update_game": [
+          0.0016634800003885175,
+          0.0016773770003055688,
+          0.0002509780006221263,
+          0.0019045400003960822,
+          0.001913165000587469,
+          0.0003928280002583051,
+          0.0019246680003561778,
+          0.0019342159994266694,
+          0.00043097100024169777,
+          0.00038372099970729323,
+          0.0018649739995453274,
+          0.00034217199936392717,
+          0.0018403370004307362,
+          0.00037771000006614486,
+          0.0003270030001658597,
+          0.0019171339999957127,
+          0.0019258799993622233,
+          0.0005189389994484372,
+          0.0020282340001358534,
+          0.002268592999826069,
+          0.0004586040004141978,
+          0.002289101999849663,
+          0.00027398200018069474,
+          0.0023983199998838245,
+          0.0006443580004997784,
+          0.002112596000188205,
+          0.00033516900020913454,
+          0.0022037190001356066,
+          0.00042683299943746533,
+          0.0024122770000758464,
+          0.0004916569996566977,
+          0.0022572210000362247,
+          0.0004568599997583078,
+          0.002408108999588876,
+          0.0023559989995192154,
+          0.000552673000129289,
+          0.000440619999608316,
+          0.0022787830002926057,
+          0.0004478329992707586,
+          0.00224552899999253,
+          0.000533446999725129,
+          0.0006065560000934056,
+          0.0022744049992979853,
+          0.002454688000398164,
+          0.0006017470004735515
+        ]
+      },
+      "order_counts": {
+        "MOVE": 115,
+        "HOLD": 62,
+        "BUILD": 14,
+        "SUPPORT": 63
+      },
+      "result_counts": {
+        "SUCCESS": 421,
+        "void": 16,
+        "disband": 4,
+        "bounce": 19
+      },
+      "warnings": [],
+      "errors": [],
+      "sync_mismatches": 0,
+      "legality_flags": 0,
+      "missing_order_slots": 4,
+      "constructor_time": 3.804199968726607e-05
+    }
+  ]
+}

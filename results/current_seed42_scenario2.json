@@ -1,0 +1,641 @@
+{
+  "label": "Official-style Scenario 2 [agent_09]",
+  "repeats": 10,
+  "seed": 42,
+  "rows": {
+    "AUSTRIA": {
+      "power": "AUSTRIA",
+      "avg_sc": 12.1,
+      "std_sc": 5.539855593785816,
+      "win_rate": 40.0,
+      "survive_rate": 60.0,
+      "defeat_rate": 0.0,
+      "games": 10
+    },
+    "ENGLAND": {
+      "power": "ENGLAND",
+      "avg_sc": 8.8,
+      "std_sc": 6.2257529665093525,
+      "win_rate": 10.0,
+      "survive_rate": 70.0,
+      "defeat_rate": 20.0,
+      "games": 10
+    },
+    "FRANCE": {
+      "power": "FRANCE",
+      "avg_sc": 13.6,
+      "std_sc": 6.2,
+      "win_rate": 60.0,
+      "survive_rate": 30.0,
+      "defeat_rate": 10.0,
+      "games": 10
+    },
+    "GERMANY": {
+      "power": "GERMANY",
+      "avg_sc": 10.6,
+      "std_sc": 7.683749084919419,
+      "win_rate": 50.0,
+      "survive_rate": 30.0,
+      "defeat_rate": 20.0,
+      "games": 10
+    },
+    "ITALY": {
+      "power": "ITALY",
+      "avg_sc": 10.0,
+      "std_sc": 5.458937625582473,
+      "win_rate": 20.0,
+      "survive_rate": 70.0,
+      "defeat_rate": 10.0,
+      "games": 10
+    },
+    "RUSSIA": {
+      "power": "RUSSIA",
+      "avg_sc": 11.5,
+      "std_sc": 5.352569476429054,
+      "win_rate": 30.0,
+      "survive_rate": 70.0,
+      "defeat_rate": 0.0,
+      "games": 10
+    },
+    "TURKEY": {
+      "power": "TURKEY",
+      "avg_sc": 13.4,
+      "std_sc": 5.885575587824865,
+      "win_rate": 50.0,
+      "survive_rate": 50.0,
+      "defeat_rate": 0.0,
+      "games": 10
+    },
+    "ALL": {
+      "power": "ALL",
+      "avg_sc": 11.428571428571429,
+      "std_sc": 6.310017950102222,
+      "win_rate": 37.142857142857146,
+      "survive_rate": 54.285714285714285,
+      "defeat_rate": 8.571428571428571,
+      "games": 70
+    }
+  },
+  "game_records": [
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "ENGLAND",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "GERMANY",
+      "score": 7,
+      "outcome": "SURVIVE",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "ITALY",
+      "score": 12,
+      "outcome": "SURVIVE",
+      "end_year": 1918
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "RUSSIA",
+      "score": 5,
+      "outcome": "SURVIVE",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 1,
+      "power": "TURKEY",
+      "score": 12,
+      "outcome": "SURVIVE",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "AUSTRIA",
+      "score": 13,
+      "outcome": "SURVIVE",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "ENGLAND",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "FRANCE",
+      "score": 5,
+      "outcome": "SURVIVE",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "GERMANY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "ITALY",
+      "score": 4,
+      "outcome": "SURVIVE",
+      "end_year": 1912
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "RUSSIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1914
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 2,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "AUSTRIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "ENGLAND",
+      "score": 1,
+      "outcome": "SURVIVE",
+      "end_year": 1916
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "ITALY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "RUSSIA",
+      "score": 10,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 3,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1914
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "AUSTRIA",
+      "score": 12,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "ENGLAND",
+      "score": 12,
+      "outcome": "SURVIVE",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "FRANCE",
+      "score": 12,
+      "outcome": "SURVIVE",
+      "end_year": 1916
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "GERMANY",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1918
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "ITALY",
+      "score": 13,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "RUSSIA",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 4,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "AUSTRIA",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "ENGLAND",
+      "score": 9,
+      "outcome": "SURVIVE",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "FRANCE",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1905
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "GERMANY",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "RUSSIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1916
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 5,
+      "power": "TURKEY",
+      "score": 17,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1912
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "ENGLAND",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1915
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "RUSSIA",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1918
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 6,
+      "power": "TURKEY",
+      "score": 7,
+      "outcome": "SURVIVE",
+      "end_year": 1916
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1906
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "ENGLAND",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1912
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "ITALY",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1916
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "RUSSIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 7,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "AUSTRIA",
+      "score": 9,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "ENGLAND",
+      "score": 9,
+      "outcome": "SURVIVE",
+      "end_year": 1906
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "FRANCE",
+      "score": 0,
+      "outcome": "DEFEAT",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "ITALY",
+      "score": 8,
+      "outcome": "SURVIVE",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "RUSSIA",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1914
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 8,
+      "power": "TURKEY",
+      "score": 2,
+      "outcome": "SURVIVE",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "AUSTRIA",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "ENGLAND",
+      "score": 17,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1913
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "GERMANY",
+      "score": 3,
+      "outcome": "SURVIVE",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "ITALY",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "RUSSIA",
+      "score": 11,
+      "outcome": "SURVIVE",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 9,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "ENGLAND",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1917
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1911
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1909
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "ITALY",
+      "score": 10,
+      "outcome": "SURVIVE",
+      "end_year": 1910
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "RUSSIA",
+      "score": 15,
+      "outcome": "SURVIVE",
+      "end_year": 1920
+    },
+    {
+      "label": "Official-style Scenario 2 [agent_09]",
+      "repeat": 10,
+      "power": "TURKEY",
+      "score": 6,
+      "outcome": "SURVIVE",
+      "end_year": 1906
+    }
+  ]
+}

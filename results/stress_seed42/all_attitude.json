@@ -1,0 +1,193 @@
+{
+  "label": "Unofficial stress: all_attitude",
+  "repeats": 2,
+  "seed": 42,
+  "rows": {
+    "AUSTRIA": {
+      "power": "AUSTRIA",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "ENGLAND": {
+      "power": "ENGLAND",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "FRANCE": {
+      "power": "FRANCE",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "GERMANY": {
+      "power": "GERMANY",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "ITALY": {
+      "power": "ITALY",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "RUSSIA": {
+      "power": "RUSSIA",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "TURKEY": {
+      "power": "TURKEY",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 2
+    },
+    "ALL": {
+      "power": "ALL",
+      "avg_sc": 18.0,
+      "std_sc": 0.0,
+      "win_rate": 100.0,
+      "survive_rate": 0.0,
+      "defeat_rate": 0.0,
+      "games": 14
+    }
+  },
+  "game_records": [
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "ENGLAND",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1915
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1909
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "RUSSIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1906
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 1,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "AUSTRIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "ENGLAND",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1914
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "FRANCE",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "GERMANY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "ITALY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "RUSSIA",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1907
+    },
+    {
+      "label": "Unofficial stress: all_attitude",
+      "repeat": 2,
+      "power": "TURKEY",
+      "score": 18,
+      "outcome": "WIN",
+      "end_year": 1908
+    }
+  ]
+}
